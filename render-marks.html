@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}canvas{display:block;width:100vw;height:100vh}</style></head>
+<body><canvas id="c"></canvas><script type="module">
+import { startHero } from '/src/v5/hero3d.js';
+const q = Object.fromEntries(new URLSearchParams(location.search));
+startHero(document.getElementById('c'), { still: { dark: q.dark === '1', bg: '#' + q.bg, floor: '#' + q.floor, main: '#' + q.main, accent: '#' + q.accent, angle: +q.angle, fill: +(q.fill || .58) } });
+</script></body></html>
