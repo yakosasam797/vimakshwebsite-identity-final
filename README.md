@@ -1,4 +1,4 @@
-# Vimaksh website — v5
+# Vimaksh website — v6
 
 Continues from v4 (kept in `../site-v4` for comparison). Changes: wordmark-only header; the menu button lives in the navigation stack (fixed bottom-right, folds to just MENU when you scroll); every title left-aligned; the two identity graphics are the heat gradient and crisp pixels; each service has its own colourway of the 3D mark (`public/services/`, made with `tools/render_marks.mjs`); pixel dummy images on About (`src/v5/pixelart.js`).
 
@@ -36,3 +36,7 @@ Every page has the light/dark switch and the full-screen menu (dots, top right).
 - Team names, roles and upper-body portraits; a studio photo.
 - Real open roles and remote/hybrid policy.
 - Social links, and whether to wire the brief form to a backend.
+
+## v6 changes
+
+Same as v5, plus: dummy team photos (Wikimedia Commons, CC BY-SA 4.0, credited on the About page; `public/team/`) and the real ChatGPT / Claude marks (`public/brands/`) for the honourable mentions. `tools/get_assets.py` fetches both.

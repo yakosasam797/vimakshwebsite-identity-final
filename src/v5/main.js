@@ -137,6 +137,6 @@ const rv = $$('.sec-head, .card, .statement > *, .srow, .svc-text, .svc-art, .sp
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px' });
 rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
 
-// ---------- Home hero 3D (loaded only where there is a stage) ----------
+// ---------- Home hero: the pixel surface with the mark built from it (loaded only where there is a stage) ----------
 const stage = $('#stage');
-if (stage) import('./hero3d.js').then(m => { if (!m.startHero(stage, { reduced })) hero.classList.add('no-gl'); });
+if (stage) import('./pixelhero.js').then(async m => { if (!(await m.startPixelHero(stage, { reduced }))) hero.classList.add('no-gl'); }).catch(e => { console.error(e); hero.classList.add('no-gl'); });

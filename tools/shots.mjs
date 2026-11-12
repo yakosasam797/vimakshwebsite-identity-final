@@ -7,7 +7,7 @@ for (const s of plan) {
   const p = await b.newPage({ viewport: { width: s.w || 1440, height: s.h || 900 } });
   p.on('pageerror', e => errs.push(s.tag + ': ' + e.message)); p.on('console', m => m.type() === 'error' && errs.push(s.tag + ': ' + m.text()));
   if (s.theme) await p.addInitScript(t => localStorage.setItem('vimaksh-theme', t), s.theme);
-  await p.goto('http://localhost:4183' + (s.path || '/'), { timeout: 60000 });
+  await p.goto('http://localhost:4185' + (s.path || '/'), { timeout: 60000 });
   if ((s.path || '/') === '/') await p.waitForFunction(() => window.__hero || document.querySelector('.no-gl'), null, { timeout: 60000 });
   await p.waitForTimeout(1500);
   if (s.sel) await p.evaluate(sel => document.querySelector(sel).scrollIntoView({ behavior: 'instant', block: 'start' }), s.sel);

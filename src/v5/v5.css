@@ -422,3 +422,34 @@ html[data-theme=dark] .svc-art .cap{background:rgba(15,16,32,.7);color:#E6E8FA}
   .navbox a{display:none!important}
   .menu-chips{padding-right:0;padding-bottom:56px}
 }
+
+/* ================= v6: photo portraits and the real ChatGPT / Claude marks ================= */
+.portrait img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92);transition:transform 1.2s var(--ease),filter .6s}
+.person:hover .portrait img{transform:scale(1.035);filter:saturate(1)}
+.person--bot:hover .portrait img{transform:none}
+.bot-card{position:absolute;inset:0;display:grid;place-items:center}
+.bot-card--gpt{background:#0D0D0D}
+.bot-card--claude{background:#F0EEE6}
+.bot-logo{width:44%!important;height:auto!important;object-fit:contain!important;filter:none!important;transition:transform .8s var(--ease)!important}
+.bot-card--gpt .bot-logo{border-radius:22%}
+.person--bot:hover .bot-logo{transform:translateY(-4px) scale(1.04)!important}
+.bot-status{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:7px;padding:6px 9px;font-size:10px}
+.bot-card--gpt .bot-status{background:rgba(255,255,255,.1);color:#E8F5F0}
+.bot-card--claude .bot-status{background:rgba(217,119,87,.14);color:#5A2A1A}
+.led{width:6px;height:6px;border-radius:50%;background:#16a34a;box-shadow:0 0 8px #16a34a;animation:led 2.4s ease-in-out infinite}
+.bot-card--claude .led{background:#D97757;box-shadow:0 0 8px #D97757}
+@keyframes led{50%{opacity:.35}}
+.typing{display:inline-flex;gap:3px;margin-left:2px}
+.typing i{width:3px;height:3px;background:currentColor;border-radius:50%;animation:typing 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes typing{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+.person--bot .ph-tag{z-index:2}
+.photo-credits{margin:40px 0 0;color:var(--soft);font-size:11.5px;line-height:1.5;max-width:110ch}
+.photo-credits a{color:inherit}
+@media(prefers-reduced-motion:reduce){.led,.typing i{animation:none}}
+.photo-credits{padding:0 var(--pad) 40px;margin:0}
+.bot-card--claude{box-shadow:inset 0 0 0 1px var(--rule)}
+
+/* v7: pixel-surface hero (transparent canvas over the page pattern) */
+.no-gl .stage-fallback{transform:translate(-30%,-50%);width:min(56vh,40vw)}
+.hero-grain{display:none}

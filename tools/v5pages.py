@@ -1,4 +1,4 @@
-"""Generate the v5 pages so the header, menu, footer and theme switch are identical everywhere.
+"""Generate the v6 pages so the header, menu, footer and theme switch are identical everywhere.
 Run:  py -I tools/v5pages.py   (also: npm run pages)
 """
 import io, json, os
@@ -183,8 +183,8 @@ def svc_row(s, compact=False):
 # ---------------------------------------------------------------- pages
 home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean.">
   <div class="hero-in">
-    <canvas id="stage" aria-label="The Vimaksh mark, a six-arrow sculpture, turning gently in a studio" role="img"></canvas>
-    <img class="stage-fallback" src="/logo_flat.png" alt="" aria-hidden="true">
+    <canvas id="stage" aria-label="The Vimaksh six-arrow mark, built from moving pixels" role="img"></canvas>
+    <img class="stage-fallback" src="/marks/vimaksh-mark.svg" alt="" aria-hidden="true">
     <div class="hero-grain" aria-hidden="true"></div>
     <div class="hero-copy">
       <p class="t-mono label"><span class="chev">&gt;</span> Boil the Ocean.</p>
@@ -243,15 +243,25 @@ services = f'''<section class="page-hero">
 TEAM = [('[PLACEHOLDER: name]', 'Founder · [PLACEHOLDER: role]'), ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]'),
         ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]'), ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]')]
 
-_seed = [11]
+TEAM_CREDITS = json.load(io.open('public/team/credits.json', encoding='utf-8'))
+BRAND_CREDITS = json.load(io.open('public/brands/credits.json', encoding='utf-8'))
+_n = [0]
+BOT = {
+    'gpt': dict(logo='/brands/chatgpt.svg', status='Typing', dots=True, line='Always mid-sentence'),
+    'claude': dict(logo='/brands/claude.svg', status='02:00 · second coffee', dots=False, line='Writes the code'),
+}
 def person(name, role, kind='human'):
     if kind == 'human':
-        _seed[0] += 7
-        fig = f'<canvas class="px" data-px="portrait" data-seed="{_seed[0]}" role="img" aria-label="Dummy pixel portrait"></canvas>'
+        _n[0] += 1
+        fig = f'<img src="/team/{_n[0]}.jpg" alt="Dummy portrait (stock photo, not a Vimaksh team member)" loading="lazy" width="800" height="1000">'
+        tag = 'Dummy portrait'
     else:
-        fig = f'<canvas class="px" data-px="{kind}" role="img" aria-label="Pixel character for {name}"></canvas>'
+        b = BOT[kind]
+        dots = '<i></i><i></i><i></i>' if b['dots'] else ''
+        fig = f'<span class="bot-card bot-card--{kind}"><img class="bot-logo" src="{b["logo"]}" alt="{name} logo" width="160" height="160"><span class="bot-status t-mono"><span class="led"></span>{b["status"]}<span class="typing">{dots}</span></span></span>'
+        tag = 'Honourable mention'
     return f'''      <figure class="person{' person--bot' if kind != 'human' else ''}">
-        <div class="portrait">{fig}<span class="t-mono ph-tag">{'Dummy portrait' if kind == 'human' else 'Honourable mention'}</span></div>
+        <div class="portrait">{fig}<span class="t-mono ph-tag">{tag}</span></div>
         <figcaption><b>{name}</b><span class="t-mono">{role}</span></figcaption>
       </figure>'''
 
@@ -293,6 +303,7 @@ about = f'''<section class="page-hero">
 {person('Claude', 'Writes the code · 2 a.m., second coffee', 'claude')}
   </div>
 </section>
+<p class="photo-credits">Dummy portraits from Wikimedia Commons, used as placeholders: {' · '.join(f'<a href="{c["page"]}">{c["author"] or c["title"]}</a> ({c["license"]})' for c in TEAM_CREDITS)}. ChatGPT and Claude marks are trademarks of OpenAI and Anthropic, shown here only as a nod; files: {' · '.join(f'<a href="{BRAND_CREDITS[k]["page"]}">{BRAND_CREDITS[k]["title"]}</a>' for k in ('chatgpt', 'claude'))}.</p>
 <section class="band" aria-label="Join us">
   <h2 class="t-section">Want to join the party?</h2>
   <a class="btn" href="/careers/"><span>See careers</span><span class="chev" aria-hidden="true">&gt;</span></a>
