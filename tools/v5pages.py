@@ -101,7 +101,7 @@ def footer(name=""):
       {foot_form if name != 'contact' else foot_cta}
     </div>
     <div class="cols">
-      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
+      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/contact/">Contact</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="{MAPS}" target="_blank" rel="noopener">{addr}</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">{LAT}<br>{LON}</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
@@ -242,40 +242,6 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
   </div>
 </section>'''
 
-ROLES = [('[PLACEHOLDER: role title]', 'Design', 'Bengaluru · Full-time'), ('[PLACEHOLDER: role title]', 'Engineering', 'Bengaluru / Remote · Full-time'),
-         ('[PLACEHOLDER: role title]', 'Research', 'Bengaluru · Internship')]
-careers = f'''<section class="page-hero page-hero--careers">
-  <p class="t-mono label"><span class="chev">&gt;</span> Careers</p>
-  <h1 class="t-hero">Where curiosity, craft<br>and code work together.</h1>
-  <div class="hero-cta"><a class="btn" href="#roles"><span>See open roles</span><span class="chev" aria-hidden="true">&gt;</span></a><span class="t-mono soft">({len(ROLES)} placeholder roles)</span></div>
-</section>
-<section class="split" aria-labelledby="hw-h">
-  <p class="t-mono label" id="hw-h"><span class="chev">&gt;</span> How we work</p>
-  <p class="t-big">We are a small, exacting team. Join through a role, a shared experiment, or a clear reason to make something together.</p>
-</section>
-<section class="values" aria-label="What it's like">
-  <article><p class="t-mono n">(01)</p><h3>One team, start to finish</h3><p>Strategy, design and engineering sit together. The people who imagine it are the people who build it.</p></article>
-  <article><p class="t-mono n">(02)</p><h3>What guides us</h3><p>Curiosity, care and first principles. We push for clarity when things get complex.</p></article>
-  <article><p class="t-mono n">(03)</p><h3>Based in Bengaluru</h3><p>Our home is Jayanagar, Bengaluru. [PLACEHOLDER: confirm remote / hybrid policy.]</p></article>
-  <article><p class="t-mono n">(04)</p><h3>Room to grow</h3><p>You learn on real products with real users, and take on more as you are ready for it.</p></article>
-</section>
-<section class="roles" id="roles" aria-labelledby="roles-h">
-  <div class="sec-head"><p class="t-mono label"><span class="chev">&gt;</span> Open roles</p><h2 id="roles-h" class="t-section">Open positions</h2></div>
-  <ul class="rlist">
-{chr(10).join(f'    <li><a href="mailto:hq@vimaksh.in?subject=Application"><span class="rt">{t}</span><span class="t-mono">{d}</span><span class="t-mono">{l}</span><span class="t-mono go">Apply <span class="chev">&gt;</span></span></a></li>' for t, d, l in ROLES)}
-  </ul>
-  <p class="open">Don't see your role? Write to <button type="button" class="inline-copy" data-copy="hq@vimaksh.in">hq@vimaksh.in</button> with a clear reason to make something together.</p>
-</section>
-<section class="process" aria-labelledby="pc-h">
-  <div class="sec-head"><p class="t-mono label"><span class="chev">&gt;</span> Process</p><h2 id="pc-h" class="t-section">How hiring works.</h2></div>
-  <ol class="steps">
-    <li><span class="t-mono">01</span><b>Write to us</b><p>A short note and something you've made.</p></li>
-    <li><span class="t-mono">02</span><b>First conversation</b><p>Thirty minutes, both ways.</p></li>
-    <li><span class="t-mono">03</span><b>A small shared task</b><p>Paid, real, and short.</p></li>
-    <li><span class="t-mono">04</span><b>Decision</b><p>Within a week, either way.</p></li>
-  </ol>
-</section>'''
-
 contact = f'''<section class="contact-page" aria-labelledby="ct-h">
   <div class="ct-left">
     <p class="t-mono label"><span class="chev">&gt;</span> Contact</p>
@@ -298,12 +264,8 @@ contact = f'''<section class="contact-page" aria-labelledby="ct-h">
       <div class="cell"><span>Studio</span><address class="addr"><a href="{MAPS}" target="_blank" rel="noopener">{'<br>'.join(ADDRESS_LINES)}</a></address></div>
       <div class="cell"><span class="t-mono soft">Coordinates</span><button class="pill t-mono" type="button" data-copy="{LAT}, {LON}">{LAT_S} {LON_S}</button><span class="t-mono soft">Bengaluru now · <span data-clock>--:--:--</span> IST</span></div>
     </div>
-    <div class="block">
-      <a class="row" href="/careers/"><span>Join us</span><span class="pill t-mono">Careers <span class="tri" aria-hidden="true">▸</span></span></a>
-    </div>
   </div>
 </section>'''
 
 page('home', 'Vimaksh — Boil the Ocean.', 'Vimaksh builds custom software: Chrome extensions, industry SaaS, AI automation, CRM and ERP. We turn “what if?” into products you can actually use.', home)
-page('careers', 'Careers — Vimaksh', 'Careers at Vimaksh: where curiosity, craft and code work together.', careers)
 page('contact', 'Contact — Vimaksh', f'Start a project with Vimaksh: hq@vimaksh.in, {ADDRESS}.', contact)

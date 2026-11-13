@@ -6,7 +6,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 900,
     rollupOptions: { input: {
       main: page('index.html'),
-      careers: page('careers/index.html'), contact: page('contact/index.html'),
+      contact: page('contact/index.html'),
     } },
   },
 });

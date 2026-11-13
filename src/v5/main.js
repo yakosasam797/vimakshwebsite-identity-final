@@ -168,8 +168,9 @@ rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 
   const gap = () => parseFloat(getComputedStyle(track).columnGap) || 0;
   const stepW = () => originals[0].getBoundingClientRect().width + gap();
   const setW = () => originals.length * stepW();
-  const SPEED = 28;                                   // px per second: slow enough to read while it moves
-  let pos = 0, paused = 0, hold = false, last = performance.now(), onScreen = false;
+  // px per second: slow enough to read while it moves; gentler still when the device asks for less motion
+  const SPEED = reduced ? 18 : 34;
+  let pos = 0, paused = 0, hold = false, hover = false, last = performance.now(), onScreen = false;
   const sync = () => {
     const w = setW(), p = (((track.scrollLeft % w) + w) % w) / w, vis = Math.min(1, track.clientWidth / w);
     if (bar) { bar.style.width = (vis * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p / vis * 100).toFixed(2)}%)`; }
@@ -183,23 +184,24 @@ rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 
   };
   prev?.addEventListener('click', () => jump(-1));
   next?.addEventListener('click', () => jump(1));
-  track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hold = true; });
-  track.addEventListener('pointerleave', () => { hold = false; pauseFor(500); });
+  track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hover = true; });
+  track.addEventListener('pointerleave', () => { hover = false; });
   track.addEventListener('touchstart', () => pauseFor(4000), { passive: true });
-  track.addEventListener('wheel', () => pauseFor(2500), { passive: true });
-  track.addEventListener('focusin', () => { hold = true; });
+  track.addEventListener('wheel', e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) pauseFor(2500); }, { passive: true });
+  track.addEventListener('focusin', () => { hold = track.matches(':focus-visible, :has(:focus-visible)'); });
   track.addEventListener('focusout', () => { hold = false; });
   track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
   new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(track);
   const tick = now => {
     requestAnimationFrame(tick);
     const dt = Math.min(.05, (now - last) / 1000); last = now;
-    if (reduced || hold || !onScreen || document.hidden || now < paused) { pos = track.scrollLeft; return; }
+    if (hold || !onScreen || document.hidden || now < paused) { pos = track.scrollLeft; return; }
     const w = setW();
-    pos += SPEED * dt; if (pos >= w) pos -= w;
+    if (Math.abs(track.scrollLeft - pos) > 2) pos = track.scrollLeft;   // a manual drag moved it
+    pos += SPEED * (hover ? .35 : 1) * dt; if (pos >= w) pos -= w;
     track.scrollLeft = pos;
   };
-  if (!reduced) track.classList.add('track--auto');
+  track.classList.add('track--auto');
   requestAnimationFrame(tick);
   addEventListener('resize', sync); sync();
 })();
