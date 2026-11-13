@@ -5,9 +5,8 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 900,
     rollupOptions: { input: {
-      main: page('index.html'), services: page('services/index.html'), about: page('about/index.html'),
+      main: page('index.html'), about: page('about/index.html'),
       careers: page('careers/index.html'), contact: page('contact/index.html'),
-      paryatech: page('work/paryatech/index.html'), wingman: page('work/wingman/index.html'),
     } },
   },
 });

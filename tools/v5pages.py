@@ -1,4 +1,4 @@
-"""Generate the v6 pages so the header, menu, footer and theme switch are identical everywhere.
+"""Generate the pages so the header, menu, footer and theme switch are identical everywhere.
 Run:  py -I tools/v5pages.py   (also: npm run pages)
 """
 import io, json, os
@@ -6,7 +6,16 @@ import io, json, os
 CREDITS = json.load(io.open('public/video/credits.json', encoding='utf-8'))
 MARK_SVG = io.open('public/marks/vimaksh-mark.svg', encoding='utf-8').read().strip().replace('\n', '')
 MARK_SVG = MARK_SVG.replace('<svg width="580" height="580" ', '<svg aria-hidden="true" focusable="false" ', 1)
-WM = 'Vımaksh'   # the wordmark: dotless i
+# The wordmark, inline so it takes the colour of its context (currentColor): ink in the header, white on the footer gradient.
+WM_SVG = io.open('public/marks/vimaksh-wordmark.svg', encoding='utf-8').read().strip().replace(chr(10), '')
+WM_SVG = WM_SVG.replace('<svg width="951" height="172" ', '<svg class="wm" aria-hidden="true" focusable="false" ', 1).replace('fill="#FF5F53"', 'fill="currentColor"')
+
+# The studio. Coordinates are approximate for the address below: confirm before launch.
+ADDRESS_LINES = ['3rd Floor, Eshaaya 1629', 'E End Main Rd, 4th T Block East', 'Jayanagar 9th Block, Tilak Nagar', 'Bengaluru, Karnataka 560041']
+ADDRESS = ', '.join(ADDRESS_LINES)
+LAT, LON = '12.9210° N', '77.5960° E'
+LAT_S, LON_S = '12.92° N', '77.60° E'
+MAPS = 'https://www.google.com/maps/search/?api=1&query=' + 'Eshaaya+1629+East+End+Main+Road+Jayanagar+9th+Block+Bengaluru+560041'
 
 # ---------------------------------------------------------------- shared pieces
 def head(title, desc, page):
@@ -14,7 +23,7 @@ def head(title, desc, page):
 <html lang="en" data-page="{page}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <meta name="theme-color" content="#F4F2EE">
@@ -32,7 +41,8 @@ def head(title, desc, page):
 '''
 
 HEADER = f'''<header class="hdr">
-  <a class="brandlink" href="/" aria-label="Vimaksh, home"><span aria-hidden="true">{WM}</span></a>
+  <a class="brandlink" href="/" aria-label="Vimaksh, home">{WM_SVG}</a>
+  <button class="menu-back t-mono" type="button" data-menu-close tabindex="-1"><span class="chev" aria-hidden="true">&lt;</span> Back</button>
   <div class="hdr-r">
     <button class="toggle" type="button" aria-label="Switch to dark theme" data-toggle-theme>
       <span class="ghost g-sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5"/></svg></span>
@@ -50,21 +60,17 @@ def menu():
     return f'''<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
   <div class="menu-in">
     <div class="menu-cards">
-      <a class="mcard" href="/work/paryatech/"><video muted loop playsinline preload="none" src="/video/mumbai.webm"></video><span class="mc-tag t-mono">&gt; Case study</span><span class="mc-name">Paryatech</span></a>
-      <a class="mcard" href="/work/wingman/"><video muted loop playsinline preload="none" src="/video/blackhole.webm"></video><span class="mc-tag t-mono">&gt; Exploring</span><span class="mc-name">Wingman</span></a>
+      <a class="mcard" href="https://paryatech.in" target="_blank" rel="noopener"><video muted loop playsinline preload="none" src="/video/mumbai.webm"></video><span class="mc-tag t-mono">&gt; 01 Live</span><span class="mc-name">Paryatech <span aria-hidden="true">↗</span></span></a>
+      <a class="mcard" href="https://sachit.vimaksh.in/" target="_blank" rel="noopener"><video muted loop playsinline preload="none" src="/video/blackhole.webm"></video><span class="mc-tag t-mono">&gt; 02 Live</span><span class="mc-name">Sachit <span aria-hidden="true">↗</span></span></a>
     </div>
     <nav class="menu-links" aria-label="Menu">
       <a href="/#work">Work</a>
-      <a href="/services/">Services</a>
-      <a class="sub" href="/services/#brand">Brand</a>
-      <a class="sub" href="/services/#digital">Digital experiences</a>
-      <a class="sub" href="/services/#product">Product</a>
-      <a class="sub" href="/services/#research">Research</a>
+      <a href="/#services">What we build</a>
       <a href="/about/">About us</a>
       <a href="/careers/">Careers</a>
       <a href="/contact/">Contact</a>
     </nav>
-    <div class="menu-chips t-mono"><a href="https://vimaksh.in/join">Join</a><a href="https://vimaksh.in/thoughts">Thoughts</a><a href="https://vimaksh.in/events">Events</a><button type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
+    <div class="menu-chips t-mono"><button type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
   </div>
 </div>
 <div class="tip t-mono" aria-hidden="true">Copy</div>
@@ -72,36 +78,38 @@ def menu():
 
 NAVBOX = '''<nav class="navbox" aria-label="Main" data-navbox>
     <a href="/#work"><span class="c" aria-hidden="true">&gt;</span><span class="t">Work</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <a href="/services/"><span class="c" aria-hidden="true">&gt;</span><span class="t">Services</span><span class="c" aria-hidden="true">&lt;</span></a>
+    <a href="/#services"><span class="c" aria-hidden="true">&gt;</span><span class="t">What we build</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/about/"><span class="c" aria-hidden="true">&gt;</span><span class="t">About</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/contact/"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
     <button class="menubox" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu" data-menu-btn><span class="t">Menu</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
   </nav>'''
 
 def footer():
-    cred = ' · '.join(f'<a href="{c["page"]}">{c["title"].rsplit(".", 1)[0]}</a> ({c["license"]})' for c in CREDITS.values())
+    addr = '<br>'.join(ADDRESS_LINES)
     return f'''<footer class="foot" id="footer" data-tone="dark">
   <canvas class="edge edge--top" data-edge="night" aria-hidden="true"></canvas>
-  <div class="foot-glow heat" aria-hidden="true"><canvas class="edge edge--glow" data-edge="night" aria-hidden="true"></canvas></div>
   <div class="foot-in">
     <div class="foot-top">
-      <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
-      <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
-      <h2 class="t-statement">Come build what<br>should exist.</h2>
+      <div class="foot-say">
+        <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
+        <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
+        <h2 class="t-statement">Come build what<br>should exist.</h2>
+      </div>
       <div class="foot-cta">
         <button class="email" type="button" data-copy="hq@vimaksh.in"><span class="chev l" aria-hidden="true">&gt;</span>hq@vimaksh.in<span class="chev r" aria-hidden="true">&lt;</span></button>
         <a class="btn" href="/contact/"><span>Start a project</span><span class="chev" aria-hidden="true">&gt;</span></a>
       </div>
     </div>
     <div class="cols">
-      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/services/">Services</a></li><li><a href="/about/">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
-      <div><p class="t-mono k">Elsewhere</p><ul><li><a href="https://vimaksh.in/join">Join</a></li><li><a href="https://vimaksh.in/thoughts">Thoughts / Notes</a></li><li><a href="https://vimaksh.in/events">Events</a></li></ul></div>
-      <div><p class="t-mono k">Coordinates</p><p class="t-mono v">12.9716° N<br>77.5946° E</p></div>
-      <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p><a class="totop t-mono" href="#top">Back to top <span aria-hidden="true">↑</span></a></div>
+      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/about/">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
+      <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="{MAPS}" target="_blank" rel="noopener">{addr}</a></address></div>
+      <div><p class="t-mono k">Coordinates</p><p class="t-mono v">{LAT}<br>{LON}</p></div>
+      <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
     </div>
-    <p class="giant" aria-hidden="true">{WM}</p>
-    <div class="fine t-mono"><span>© <span data-year>2026</span> Vimaksh</span><span>Built from first principles</span><span>Boil the Ocean.</span></div>
-    <p class="credits">Work-card footage from Wikimedia Commons: {cred}.</p>
+  </div>
+  <div class="foot-base heat" data-pixel-mask>
+    <div class="giant" aria-hidden="true">{WM_SVG}</div>
+    <div class="fine t-mono"><span>© <span data-year>2026</span> Vimaksh</span><span class="fine-r"><a href="/about/#credits">Credits</a><a class="totop" href="#top">Back to top <span aria-hidden="true">↑</span></a></span></div>
   </div>
 </footer>
 '''
@@ -121,64 +129,60 @@ def page(name, title, desc, body):
 
 # ---------------------------------------------------------------- content
 WORK = [
-    dict(key='paryatech', name='Paryatech', status='Live', video='mumbai', logo='/marks/paryatech-wordmark.svg', href='/work/paryatech/',
-         tags='Travel SaaS · India-first', desc='From first enquiry to booked trip—one workspace for modern Indian travel agencies.'),
-    dict(key='wingman', name='Wingman', status='Exploring', video='blackhole', logo='/marks/wingman-mark.svg', href='/work/wingman/',
-         tags='AI agents · Open system', desc='An open engineering system for reliable software with AI agents—in research / early development.'),
-    dict(key='p3', name='Project 03', status='Placeholder', video='convection', desc='[PLACEHOLDER: project name and one-line description]', tags='[Placeholder]'),
-    dict(key='p4', name='Project 04', status='Placeholder', video='waves', desc='[PLACEHOLDER: project name and one-line description]', tags='[Placeholder]'),
-    dict(key='p5', name='Project 05', status='Placeholder', video='sst', desc='[PLACEHOLDER: project name and one-line description]', tags='[Placeholder]'),
-    dict(key='p6', name='Project 06', status='Placeholder', video='clouds', desc='[PLACEHOLDER: project name and one-line description]', tags='[Placeholder]'),
+    dict(name='Paryatech', url='https://paryatech.in', host='paryatech.in', video='mumbai', kind='Travel SaaS',
+         line='The workspace behind every trip.',
+         desc='Brings a travel agency’s enquiries, itineraries, bookings and finances together in one place.'),
+    dict(name='Sachit', url='https://sachit.vimaksh.in/', host='sachit.vimaksh.in', video='blackhole', kind='Support desk',
+         line='A home for every “help!”',
+         desc='Turns emails and in-app requests into support tickets your team can organise, track and resolve.'),
+    dict(name='Sarak Ecosystem', url='https://sarakabhiyan.org/', host='sarakabhiyan.org', video='convection', kind='Community platform',
+         line='Technology that keeps a community connected.',
+         desc='A digital ecosystem supporting Sarak’s pathshalas, volunteers, events and community initiatives.'),
+    dict(name='HQly', url='https://hqly.vimaksh.in/', host='hqly.vimaksh.in', video='waves', kind='Company workspace',
+         line='Your company’s everyday HQ.',
+         desc='Brings people, office resources, finances and approvals into one shared workspace.'),
+    dict(name='Vaat', url='https://vaat.vimaksh.in/', host='vaat.vimaksh.in', video='sst', kind='Team discussions',
+         line='The conversation behind the work.',
+         desc='A space for your team to exchange ideas, ask questions and figure things out together.'),
+    dict(name='Godspeed', url='https://godspeed.wtf', host='godspeed.wtf', video='clouds', kind='Project management',
+         line='Keep everyone on the bigger picture.',
+         desc='Plan projects, work through tasks and keep everyone connected to the bigger picture.'),
 ]
 
 def work_card(w, i):
-    art = (f'<span class="logo"><span class="chip"><img src="{w["logo"]}" alt="" loading="lazy"></span></span>' if w.get('logo')
-           else f'<span class="num t-mono" aria-hidden="true">{i + 1:02d}</span>')
-    href = w.get('href', '/contact/')
-    label = 'View project' if w.get('href') else 'Ask about this project'
-    return f'''      <article class="card{' card--ph' if not w.get('logo') else ''}">
-        <a class="media" href="{href}" tabindex="-1" aria-hidden="true">
+    n = f'{i + 1:02d}'
+    return f'''      <article class="card">
+        <a class="media" href="{w['url']}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="metadata" src="/video/{w['video']}.webm"></video>
-          <span class="veil"></span>{art}
-          <span class="tag t-mono"><i class="dot{' live' if w['status'] == 'Live' else ''}"></i>{w['status']}</span>
+          <span class="veil"></span><span class="num t-mono" aria-hidden="true">{n}</span>
+          <span class="tag t-mono">{w['kind']}</span>
         </a>
-        <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['tags']}</span></div>
+        <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['host']}</span></div>
+        <p class="line">{w['line']}</p>
         <p>{w['desc']}</p>
-        <a class="bar t-mono" href="{href}">{label}<span class="sr"> — {w['name']}</span> <span class="chev" aria-hidden="true">&gt;</span></a>
+        <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener">Visit {w['host']}<span class="sr"> (opens in a new tab)</span> <span class="chev" aria-hidden="true">↗</span></a>
       </article>'''
 
-SERVICES = [
-    dict(id='brand', n='01', name='Brand', g='heat', line='Identities with a point of view.',
-         body='Naming, identity systems and the voice that carries them: built from what a company actually believes, then tested on the people it is for.',
-         items=['Positioning', 'Identity systems', 'Voice & messaging', 'Brand guidelines']),
-    dict(id='digital', n='02', name='Digital experiences', g='lines', line='Sites and interfaces that leave an impression.',
-         body='Websites and product interfaces designed and built in-house, from the first sketch to the last line of code, with motion and 3D where it earns its place.',
-         items=['Websites', 'Interface design', 'Motion & 3D', 'Front-end build']),
-    dict(id='product', n='03', name='Product', g='pixels', line='Independent products, shipped and measured.',
-         body='We take ideas to working software, put them in front of real users early, and keep what survives contact with the world.',
-         items=['Product strategy', 'Prototyping', 'MVP build', 'Launch & iteration']),
-    dict(id='research', n='04', name='Research', g='rings', line='Open questions, explored in public.',
-         body='Experiments at the edge of what we know, from AI-assisted engineering to new ways of working, written up so others can build on them.',
-         items=['Exploratory prototypes', 'Technical research', 'Field testing', 'Write-ups']),
+# What we build: custom software only. Each type gets its own pixel graphic and colour (src/v5/pixelart.js → saas).
+BUILD = [
+    dict(k='extension', name='Chrome extensions', c='#2D36FF', desc='Tools that live in the browser, right where your team already works.'),
+    dict(k='saas', name='Industry SaaS', c='#E42114', desc='Platforms shaped around one industry’s real workflows, not a generic template.'),
+    dict(k='ai', name='AI automation', c='#7A3CD6', desc='Agents and pipelines that read, sort, draft and decide, so people don’t have to.'),
+    dict(k='crm', name='CRM', c='#0E8F6E', desc='Leads, conversations and follow-ups in one place, built around how you sell.'),
+    dict(k='erp', name='ERP', c='#E8730C', desc='Inventory, orders, finance and people, connected end to end.'),
+    dict(k='dashboard', name='Internal tools', c='#0A8FB0', desc='Admin panels and dashboards that turn scattered data into clear decisions.'),
+    dict(k='integrations', name='Integrations & APIs', c='#C99400', desc='The glue between your systems: syncs, webhooks and APIs that just work.'),
+    dict(k='mobile', name='Mobile & field apps', c='#D23C7E', desc='Apps for the people on the move, online or off.'),
 ]
 
-def svc_row(s, compact=False):
-    items = ''.join(f'<li>{x}</li>' for x in s['items'])
-    if compact:
-        return f'''      <a class="srow" href="/services/#{s['id']}">
-        <span class="t-mono n">&gt; {s['n']}</span><span class="nm">{s['name']}</span><span class="ln">{s['line']}</span>
-        <span class="thumb" aria-hidden="true"><img class="l" src="/services/{s['id']}-light.jpg" alt="" loading="lazy"><img class="d" src="/services/{s['id']}-dark.jpg" alt="" loading="lazy"></span><span class="go chev" aria-hidden="true">&gt;</span>
-      </a>'''
-    return f'''    <section class="svc" id="{s['id']}" aria-labelledby="{s['id']}-h">
-      <div class="svc-text">
-        <p class="t-mono label"><span class="chev">&gt;</span> {s['n']}</p>
-        <h2 id="{s['id']}-h" class="t-section">{s['name']}</h2>
-        <p class="t-lead">{s['line']}</p>
-        <p class="body">{s['body']}</p>
-        <ul class="deliv t-mono">{items}</ul>
-      </div>
-      <figure class="svc-art"><img class="l" src="/services/{s['id']}-light.jpg" alt="The Vimaksh mark in the {s['name']} colourway" loading="lazy"><img class="d" src="/services/{s['id']}-dark.jpg" alt="" loading="lazy"><figcaption class="t-mono cap">{s['n']} / {s['name']}</figcaption></figure>
-    </section>'''
+def build_card(b, i):
+    return f'''      <li class="bcard" style="--c:{b['c']}">
+        <div class="btile"><canvas class="px" data-px="saas" data-kind="{b['k']}" data-c="{b['c']}" aria-hidden="true"></canvas><span class="t-mono bn">{i + 1:02d}</span></div>
+        <h3>{b['name']}</h3>
+        <p>{b['desc']}</p>
+      </li>'''
+
+STEPS = ['Question', 'Map', 'Prototype', 'Build', 'Test', 'Ship']
 
 # ---------------------------------------------------------------- pages
 home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean.">
@@ -188,10 +192,10 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
     <div class="hero-grain" aria-hidden="true"></div>
     <div class="hero-copy">
       <p class="t-mono label"><span class="chev">&gt;</span> Boil the Ocean.</p>
-      <h1>We build brands and digital experiences that don't just attract attention — they leave an impression.</h1>
-      <div class="hero-cta"><a class="btn" href="#work"><span>Explore selected work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="/contact/"><span>Start a project</span></a></div>
+      <h1>We turn “what if?” into products, platforms and experiments you can actually use.</h1>
+      <div class="hero-cta"><a class="btn" href="#work"><span>Explore our work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="/contact/"><span>Start a project</span></a></div>
     </div>
-    <p class="hero-meta t-mono"><span>Studio / Bengaluru</span><span>12.97° N 77.59° E</span><span data-clock>--:--:--</span></p>
+    <p class="hero-meta t-mono"><span>Studio / Bengaluru</span><span>{LAT_S} {LON_S}</span><span data-clock>--:--:--</span></p>
   </div>
   <div class="hero-dim" aria-hidden="true"></div>
 </section>
@@ -208,36 +212,37 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
   </div>
 </section>
 
-<section class="statement" aria-labelledby="st-h">
-  <h2 id="st-h" class="t-big">Ideas made real enough to test. Independent products and open questions, built from first principles and tested in the world.</h2>
-  <div class="st-side">
-    <p>Builders, researchers, and relentless question-askers. Different crafts, one shared map, and a stubborn appetite for the unexplored.</p>
-    <a class="btn btn--ghost" href="/about/"><span>About us</span><span class="chev" aria-hidden="true">&gt;</span></a>
+<section class="how" aria-labelledby="how-h">
+  <div class="how-frame">
+    <div class="how-text">
+      <p class="t-mono label"><span class="chev">&gt;</span> About us</p>
+      <h2 id="how-h" class="t-big">A small, exacting team in Bengaluru. Strategy, design and engineering sit together, so the people who imagine your software are the people who build it.</h2>
+      <a class="btn btn--dark" href="/about/"><span>About us</span><span class="chev" aria-hidden="true">&gt;</span></a>
+    </div>
+    <div class="how-art">
+      <div class="how-pic heat"><canvas class="px" data-px="build" aria-hidden="true"></canvas><span class="t-mono how-cap" data-step-name>01 / Question</span></div>
+      <ol class="rail t-mono" aria-label="How we work">
+{chr(10).join(f'        <li><button type="button" data-step="{i}"{" aria-current=true" if i == 0 else ""}><span class="rn">{i + 1:02d}</span><span class="rl">{s}</span></button></li>' for i, s in enumerate(STEPS))}
+      </ol>
+    </div>
   </div>
 </section>
 
-<section class="svc-teaser" aria-labelledby="sv-h">
-  <div class="sec-head">
-    <p class="t-mono label"><span class="chev">&gt;</span> What we do</p>
-    <h2 id="sv-h" class="t-section">Four ways in.</h2>
-    <a class="more t-mono" href="/services/">All services <span class="chev" aria-hidden="true">&gt;</span></a>
+<section class="build" id="services" aria-labelledby="build-h">
+  <div class="build-head">
+    <p class="t-mono label"><span class="chev">&gt;</span> What we build</p>
+    <div class="build-copy">
+      <h2 id="build-h" class="t-big">Custom software, and nothing else. From a Chrome extension to an industry-specific SaaS, AI automation, CRM or ERP: if your business runs on it, we build it.</h2>
+      <p class="soft">No templates, no website builders, no logos. One team takes it from the first question to working software in your hands.</p>
+    </div>
   </div>
-  <div class="srows">
-{chr(10).join(svc_row(s, True) for s in SERVICES)}
+  <ul class="track" data-track aria-label="Types of software we build">
+{chr(10).join(build_card(b, i) for i, b in enumerate(BUILD))}
+  </ul>
+  <div class="track-foot">
+    <span class="track-bar" aria-hidden="true"><i data-track-bar></i></span>
+    <div class="track-btns"><button type="button" class="tbtn" data-track-prev aria-label="Previous"><span aria-hidden="true">←</span></button><button type="button" class="tbtn" data-track-next aria-label="Next"><span aria-hidden="true">→</span></button></div>
   </div>
-</section>'''
-
-services = f'''<section class="page-hero">
-  <p class="t-mono label"><span class="chev">&gt;</span> Services</p>
-  <h1 class="t-hero">Brand, digital, product and research:<br>four crafts, one shared map.</h1>
-  <p class="t-lead">Each one stands on its own. Most projects use two or three together, run by one small team from first question to launch.</p>
-</section>
-<div class="svcs">
-{chr(10).join(svc_row(s) for s in SERVICES)}
-</div>
-<section class="band" aria-label="Start a project">
-  <h2 class="t-section">Not sure which one you need?</h2>
-  <a class="btn" href="/contact/"><span>Tell us the problem</span><span class="chev" aria-hidden="true">&gt;</span></a>
 </section>'''
 
 TEAM = [('[PLACEHOLDER: name]', 'Founder · [PLACEHOLDER: role]'), ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]'),
@@ -265,6 +270,7 @@ def person(name, role, kind='human'):
         <figcaption><b>{name}</b><span class="t-mono">{role}</span></figcaption>
       </figure>'''
 
+video_credits = ' · '.join(f'<a href="{c["page"]}">{c["title"].rsplit(".", 1)[0]}</a> ({c["license"]})' for c in CREDITS.values())
 about = f'''<section class="page-hero">
   <p class="t-mono label"><span class="chev">&gt;</span> About us</p>
   <h1 class="t-hero">Small party.<br>Large quests.</h1>
@@ -275,13 +281,13 @@ about = f'''<section class="page-hero">
 </div>
 <section class="split" aria-labelledby="mission-h">
   <p class="t-mono label" id="mission-h"><span class="chev">&gt;</span> Mission</p>
-  <p class="t-big">Vimaksh builds independent products and chases open questions, built from first principles and tested in the world. We make brands and digital experiences that don't just attract attention — they leave an impression.</p>
+  <p class="t-big">We turn “what if?” into products, platforms and experiments you can actually use. Custom software, built from first principles and tested in the world.</p>
 </section>
 <section class="nums" aria-label="Vimaksh in numbers">
-  <div><p class="num">02</p><p class="t-mono">Independent products</p></div>
-  <div class="num-px"><canvas class="px" data-px="field" aria-hidden="true"></canvas><p class="num">01</p><p class="t-mono">Live in market</p></div>
-  <div><p class="num">04</p><p class="t-mono">Crafts under one roof</p></div>
-  <div><p class="num num--sm">12.97° N</p><p class="t-mono">Bengaluru, India</p></div>
+  <div><p class="num">06</p><p class="t-mono">Products &amp; platforms built</p></div>
+  <div class="num-px"><canvas class="px" data-px="field" aria-hidden="true"></canvas><p class="num">100%</p><p class="t-mono">Custom software</p></div>
+  <div><p class="num">01</p><p class="t-mono">Team, start to finish</p></div>
+  <div><p class="num num--sm">{LAT_S}</p><p class="t-mono">Bengaluru, India</p></div>
 </section>
 <section class="principles" aria-labelledby="pr-h">
   <div class="sec-head"><p class="t-mono label"><span class="chev">&gt;</span> How we think</p><h2 id="pr-h" class="t-section">Four principles.</h2></div>
@@ -303,7 +309,7 @@ about = f'''<section class="page-hero">
 {person('Claude', 'Writes the code · 2 a.m., second coffee', 'claude')}
   </div>
 </section>
-<p class="photo-credits">Dummy portraits from Wikimedia Commons, used as placeholders: {' · '.join(f'<a href="{c["page"]}">{c["author"] or c["title"]}</a> ({c["license"]})' for c in TEAM_CREDITS)}. ChatGPT and Claude marks are trademarks of OpenAI and Anthropic, shown here only as a nod; files: {' · '.join(f'<a href="{BRAND_CREDITS[k]["page"]}">{BRAND_CREDITS[k]["title"]}</a>' for k in ('chatgpt', 'claude'))}.</p>
+<p class="photo-credits" id="credits">Credits. Dummy portraits from Wikimedia Commons, used as placeholders: {' · '.join(f'<a href="{c["page"]}">{c["author"] or c["title"]}</a> ({c["license"]})' for c in TEAM_CREDITS)}. Work-card footage from Wikimedia Commons: {video_credits}. ChatGPT and Claude marks are trademarks of OpenAI and Anthropic, shown here only as a nod; files: {' · '.join(f'<a href="{BRAND_CREDITS[k]["page"]}">{BRAND_CREDITS[k]["title"]}</a>' for k in ('chatgpt', 'claude'))}.</p>
 <section class="band" aria-label="Join us">
   <h2 class="t-section">Want to join the party?</h2>
   <a class="btn" href="/careers/"><span>See careers</span><span class="chev" aria-hidden="true">&gt;</span></a>
@@ -323,7 +329,7 @@ careers = f'''<section class="page-hero page-hero--careers">
 <section class="values" aria-label="What it's like">
   <article><p class="t-mono n">(01)</p><h3>One team, start to finish</h3><p>Strategy, design and engineering sit together. The people who imagine it are the people who build it.</p></article>
   <article><p class="t-mono n">(02)</p><h3>What guides us</h3><p>Curiosity, care and first principles. We push for clarity when things get complex.</p></article>
-  <article><p class="t-mono n">(03)</p><h3>Based in Bengaluru</h3><p>Our home is Bengaluru. [PLACEHOLDER: confirm remote / hybrid policy.]</p></article>
+  <article><p class="t-mono n">(03)</p><h3>Based in Bengaluru</h3><p>Our home is Jayanagar, Bengaluru. [PLACEHOLDER: confirm remote / hybrid policy.]</p></article>
   <article><p class="t-mono n">(04)</p><h3>Room to grow</h3><p>You learn on real products with real users, and take on more as you are ready for it.</p></article>
 </section>
 <section class="roles" id="roles" aria-labelledby="roles-h">
@@ -343,7 +349,8 @@ careers = f'''<section class="page-hero page-hero--careers">
   </ol>
 </section>'''
 
-contact = '''<section class="contact-page" aria-labelledby="ct-h">
+NEEDS = ['Chrome extension', 'Industry SaaS', 'AI automation', 'CRM / ERP', 'Internal tool', 'Not sure yet']
+contact = f'''<section class="contact-page" aria-labelledby="ct-h">
   <div class="ct-left">
     <p class="t-mono label"><span class="chev">&gt;</span> Contact</p>
     <h1 id="ct-h" class="t-hero">The best work begins with the right introduction.</h1>
@@ -360,7 +367,7 @@ contact = '''<section class="contact-page" aria-labelledby="ct-h">
             <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
             <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label>
             <fieldset><legend class="t-mono">What do you need?</legend>
-              <div class="chips"><label><input type="checkbox" name="need" value="Brand"><span>Brand</span></label><label><input type="checkbox" name="need" value="Digital experience"><span>Digital experience</span></label><label><input type="checkbox" name="need" value="Product"><span>Product</span></label><label><input type="checkbox" name="need" value="Research"><span>Research</span></label><label><input type="checkbox" name="need" value="Not sure yet"><span>Not sure yet</span></label></div>
+              <div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div>
             </fieldset>
             <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="4" required></textarea></label>
             <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note>Opens your email app with the brief filled in.</p></div>
@@ -371,19 +378,16 @@ contact = '''<section class="contact-page" aria-labelledby="ct-h">
       <div class="row"><span>New projects</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
     </div>
     <div class="block block--split">
-      <div class="cell"><span>Studio</span><p>We're a small team building from Bengaluru, India.</p></div>
-      <div class="cell"><p class="addr">Bengaluru,<br>Karnataka,<br><br>India</p><button class="pill t-mono" type="button" data-copy="12.9716° N, 77.5946° E">12.97° N 77.59° E</button></div>
+      <div class="cell"><span>Studio</span><address class="addr"><a href="{MAPS}" target="_blank" rel="noopener">{'<br>'.join(ADDRESS_LINES)}</a></address></div>
+      <div class="cell"><span class="t-mono soft">Coordinates</span><button class="pill t-mono" type="button" data-copy="{LAT}, {LON}">{LAT_S} {LON_S}</button><span class="t-mono soft">Bengaluru now · <span data-clock>--:--:--</span> IST</span></div>
     </div>
     <div class="block">
-      <a class="row" href="/careers/"><span>Join us <sup class="t-mono">(placeholder roles)</sup></span><span class="pill t-mono">Careers <span class="tri" aria-hidden="true">▸</span></span></a>
-      <div class="row"><span>Elsewhere</span><span class="pills"><a class="pill t-mono" href="https://vimaksh.in/join">Join</a><a class="pill t-mono" href="https://vimaksh.in/thoughts">Thoughts</a><a class="pill t-mono" href="https://vimaksh.in/events">Events</a></span></div>
+      <a class="row" href="/careers/"><span>Join us</span><span class="pill t-mono">Careers <span class="tri" aria-hidden="true">▸</span></span></a>
     </div>
-    <p class="t-mono soft local">Bengaluru now · <span data-clock>--:--:--</span> IST</p>
   </div>
 </section>'''
 
-page('home', 'Vimaksh — Boil the Ocean.', 'Vimaksh: independent products and open questions, built from first principles and tested in the world.', home)
-page('services', 'Services — Vimaksh', 'Brand, digital experiences, product and research at Vimaksh.', services)
+page('home', 'Vimaksh — Boil the Ocean.', 'Vimaksh builds custom software: Chrome extensions, industry SaaS, AI automation, CRM and ERP. We turn “what if?” into products you can actually use.', home)
 page('about', 'About — Vimaksh', 'Small party. Large quests. About Vimaksh.', about)
 page('careers', 'Careers — Vimaksh', 'Careers at Vimaksh: where curiosity, craft and code work together.', careers)
-page('contact', 'Contact — Vimaksh', 'Start a project with Vimaksh: hq@vimaksh.in, Bengaluru.', contact)
+page('contact', 'Contact — Vimaksh', f'Start a project with Vimaksh: hq@vimaksh.in, {ADDRESS}.', contact)

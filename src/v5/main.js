@@ -17,18 +17,21 @@ toggle?.addEventListener('click', () => {
 });
 
 // ---------- Menu ----------
-const menu = $('#menu'), menuBtn = $('[data-menu-btn]');
+const menu = $('#menu'), menuBtn = $('[data-menu-btn]'), menuBack = $('[data-menu-close]');
 const setMenu = (open) => {
   if (!menu) return;
   if (open) { menu.hidden = false; requestAnimationFrame(() => menu.classList.add('open')); }
   else { menu.classList.remove('open'); setTimeout(() => { if (!menu.classList.contains('open')) menu.hidden = true; }, 700); }
   menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   document.body.classList.toggle('menu-open', open);
+  menuBack?.setAttribute('tabindex', open ? '0' : '-1');
   $$('.menu-links a').forEach((a, i) => { a.style.transitionDelay = open ? 120 + i * 35 + 'ms' : '0ms'; });
   $$('video', menu).forEach(v => open ? v.play().catch(() => {}) : v.pause());
   if (open) setTimeout(() => $('.menu-links a')?.focus({ preventScroll: true }), 350); else menuBtn.focus({ preventScroll: true });
 };
 menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+// In the menu the header's wordmark becomes "< Back": it says plainly how to get out.
+menuBack?.addEventListener('click', () => setMenu(false));
 addEventListener('keydown', e => { if (e.key === 'Escape' && menu?.classList.contains('open')) setMenu(false); });
 $$('.menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
 
@@ -75,11 +78,24 @@ $$('.card video').forEach(v => { v.playbackRate = reduced ? .7 : 1; vio.observe(
 
 // ---------- Pixel graphics (with the heat gradient, the brand's two graphic elements) ----------
 import { pixelEdge, portrait, bot, skyline, desk, field } from './pixelart.js';
+import { pixelMask, saas, buildArt } from './pixelsaas.js';
 const cssVar = n => getComputedStyle(html).getPropertyValue(n).trim();
-const drawEdges = () => $$('canvas.edge').forEach((c, i) => pixelEdge(c, { color: c.dataset.edge === 'night' ? '#0D0E1C' : cssVar('--paper'), seed: 3 + i }));
+const drawEdges = () => {
+  $$('canvas.edge').forEach((c, i) => pixelEdge(c, { color: c.dataset.edge === 'night' ? '#0D0E1C' : cssVar('--paper'), seed: 3 + i }));
+  // Footer gradient: its top edge breaks into squares through a mask, so the dark footer itself shows between them.
+  $$('[data-pixel-mask]').forEach(el => {
+    const cell = innerWidth < 760 ? 10 : 14, m = pixelMask(el.clientWidth, { cell, seed: 7 });
+    const v = `url(${m.url}) 0 0 / ${m.w}px ${m.h}px no-repeat, linear-gradient(#000, #000) 0 ${m.h}px / 100% calc(100% - ${m.h}px) no-repeat`;
+    el.style.webkitMask = v; el.style.mask = v; el.style.setProperty('--edge-h', m.h + 'px');
+  });
+};
 drawEdges();
-addEventListener('themechange', () => setTimeout(drawEdges, 30));
-let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawEdges, 150); });
+let rzW = innerWidth, rz = 0;
+addEventListener('resize', () => { if (innerWidth === rzW) return; rzW = innerWidth; clearTimeout(rz); rz = setTimeout(drawEdges, 150); });
+// What we build: one pixel graphic per kind of software, in its own colour; redrawn for the theme.
+const drawSaas = () => $$('canvas[data-px=saas]').forEach(c => saas(c, c.dataset.kind, c.dataset.c));
+drawSaas();
+addEventListener('themechange', () => setTimeout(() => { drawEdges(); drawSaas(); }, 30));
 $$('canvas.px').forEach(c => {
   const k = c.dataset.px;
   if (k === 'portrait') portrait(c, +c.dataset.seed);
@@ -90,15 +106,24 @@ $$('canvas.px').forEach(c => {
 });
 
 // ---------- Scroll: hero recedes as work rises over it; footer drifts up into place; header reads its background ----------
-const hero = $('.hero'), foot = $('.foot'), hdr = $('.hdr');
+const hero = $('.hero'), foot = $('.foot'), hdr = $('.hdr'), isHome = html.dataset.page === 'home';
+let lastY = scrollY;
 const onScroll = () => {
   const vh = innerHeight;
   if (hero) hero.style.setProperty('--p', Math.min(1, Math.max(0, scrollY / vh)).toFixed(3));
   if (foot) { const r = foot.getBoundingClientRect(); foot.style.setProperty('--fp', Math.min(1, Math.max(0, (vh - r.top) / Math.min(vh, r.height))).toFixed(3)); }
   if (hdr && foot) { const r = foot.getBoundingClientRect(); hdr.classList.toggle('on-dark', r.top < 60 && r.bottom > 60 && !document.body.classList.contains('menu-open')); }
-  hdr?.classList.toggle('tuck', scrollY > vh * .6 && innerWidth < 760);
+  // Header: clear at the top of the page; once you scroll it gets its own backing so it never sits on top of
+  // content, slides away while you read down, and comes back as soon as you scroll up.
+  if (hdr) {
+    const y = scrollY, dy = y - lastY;
+    hdr.classList.toggle('solid', y > 24);
+    if (Math.abs(dy) > 6) { hdr.classList.toggle('hide', dy > 0 && y > 140); lastY = y; }
+    if (y < 24) { hdr.classList.remove('hide'); lastY = y; }
+  }
   // The navigation stack folds to just its menu box once you scroll, and turns light over the dark footer.
-  document.body.classList.toggle('nav-compact', scrollY > vh * .3);
+  // Only the home hero shows the full stack; every other page shows just the menu box.
+  document.body.classList.toggle('nav-compact', !isHome || scrollY > vh * .3);
   if (foot) document.body.classList.toggle('nav-dark', foot.getBoundingClientRect().top < vh - 40 && !document.body.classList.contains('menu-open'));
 };
 // perf: at most one update per frame, however many scroll events arrive.
@@ -133,9 +158,47 @@ $$('[data-year]').forEach(n => { n.textContent = new Date().getFullYear(); });
 })();
 
 // ---------- Gentle reveal ----------
-const rv = $$('.sec-head, .card, .statement > *, .srow, .svc-text, .svc-art, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
+const rv = $$('.sec-head, .card, .how-frame, .build-head > *, .bcard, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px' });
 rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
+
+// ---------- What we build: a sideways track of cards, with arrows and a progress bar ----------
+(() => {
+  const track = $('[data-track]'); if (!track) return;
+  const bar = $('[data-track-bar]'), prev = $('[data-track-prev]'), next = $('[data-track-next]');
+  const stepW = () => { const c = $('.bcard', track); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : 300; };
+  const sync = () => {
+    const max = track.scrollWidth - track.clientWidth, p = max > 0 ? track.scrollLeft / max : 1;
+    if (bar) { bar.style.width = (track.clientWidth / track.scrollWidth * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p * (track.scrollWidth / track.clientWidth - 1) * 100).toFixed(2)}%)`; }
+    if (prev) prev.disabled = track.scrollLeft < 4;
+    if (next) next.disabled = track.scrollLeft > max - 4;
+  };
+  prev?.addEventListener('click', () => track.scrollBy({ left: -stepW(), behavior: reduced ? 'auto' : 'smooth' }));
+  next?.addEventListener('click', () => track.scrollBy({ left: stepW(), behavior: reduced ? 'auto' : 'smooth' }));
+  track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+  addEventListener('resize', sync); sync();
+})();
+
+// ---------- About teaser: six steps on the rail; the mark builds up as they advance ----------
+(() => {
+  const cv = $('canvas[data-px=build]'); if (!cv) return;
+  const btns = $$('[data-step]'), name = $('[data-step-name]'), N = btns.length;
+  let i = 0, timer = 0, art = null;
+  const go = k => {
+    i = (k + N) % N;
+    btns.forEach((b, j) => b.toggleAttribute('aria-current', j === i));
+    if (name) name.textContent = `${String(i + 1).padStart(2, '0')} / ${btns[i].querySelector('.rl').textContent}`;
+    art?.set(i, N);
+  };
+  const auto = () => { clearInterval(timer); if (!reduced) timer = setInterval(() => go(i + 1), 2200); };
+  btns.forEach((b, j) => {
+    b.addEventListener('click', () => { go(j); auto(); });
+    b.addEventListener('pointerenter', () => { clearInterval(timer); go(j); });
+  });
+  $('.rail')?.addEventListener('pointerleave', auto);
+  buildArt(cv).then(a => { art = a; go(reduced ? N - 1 : 0); });
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) auto(); else clearInterval(timer); }).observe(cv);
+})();
 
 // ---------- Home hero: the pixel surface with the mark built from it (loaded only where there is a stage) ----------
 const stage = $('#stage');

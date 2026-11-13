@@ -147,17 +147,22 @@ export async function startPixelHero(canvas, { reduced = false } = {}) {
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height);
     // the mark: centred-right on wide screens, lower centre on narrow ones; snapped to the cell grid
-    const narrow = W / H < .9, size = (narrow ? Math.min(W * .78, H * .4) : Math.min(H * .64, W * .42)) * dpr;
+    // On narrow screens the mark sits in the space left under the copy and buttons, never over them.
+    const narrow = W / H < .9;
+    let below = H * .47;
+    if (narrow && copyEl) { const r = copyEl.getBoundingClientRect(), c = canvas.getBoundingClientRect(); below = Math.max(below, r.bottom - c.top + 28); }
+    const room = H - below - 56;                       // keep clear of the meta line at the bottom
+    const size = (narrow ? Math.max(120, Math.min(W * .78, room)) : Math.min(H * .64, W * .42)) * dpr;
     // pixel size follows the mark, so the mark is always ~56 cells across: crisp detail at any screen size
     const cell = Math.max(5 * dpr, Math.round(size / 56));
     gl.uniform2f(U('uRes'), canvas.width, canvas.height); gl.uniform1f(U('uCell'), cell); gl.uniform1f(U('uDpr'), dpr);
-    let mx = narrow ? (canvas.width - size) / 2 : canvas.width * .6 - size / 2, my = narrow ? canvas.height * .47 : (canvas.height - size) / 2 + canvas.height * .02;
+    let mx = narrow ? (canvas.width - size) / 2 : canvas.width * .6 - size / 2, my = narrow ? below * dpr : (canvas.height - size) / 2 + canvas.height * .02;
     mx = Math.round(mx / cell) * cell; my = Math.round(my / cell) * cell;
     gl.uniform4f(U('uMark'), mx, my, Math.round(size / cell) * cell, 0);
     if (copyEl) { const r = copyEl.getBoundingClientRect(), c = canvas.getBoundingClientRect(); gl.uniform4f(U('uCopy'), (r.left - c.left - 24) * dpr, (r.top - c.top - 24) * dpr, (r.right - c.left + 24) * dpr, (r.bottom - c.top + 24) * dpr); }
     dirty = true;
   };
-  layout(); addEventListener('resize', layout);
+  layout(); addEventListener('resize', layout); document.fonts?.ready.then(layout);
   canvas.classList.add('ready'); window.__hero = true;
 
   const speed = reduced ? .5 : 1, STEP = 1 / 30;      // the field ticks at 30 fps: a calm pixel cadence, half the GPU work
