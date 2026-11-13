@@ -686,3 +686,23 @@ body.nav-open .menubox{background:var(--red);border-color:var(--red);color:#fff}
 .qset{min-width:0;margin:0;padding:0;border:0}
 .foot .t-statement{font-size:clamp(44px,5.4vw,92px)}
 @media(max-width:760px){.foot .t-statement{font-size:clamp(42px,12.5vw,60px)}}
+/* About picture: compact, so the section stays short */
+.about-home{grid-template-columns:clamp(220px,24vw,340px) minmax(0,1fr);padding-top:clamp(56px,6vw,96px);padding-bottom:clamp(56px,6vw,96px)}
+@media(max-width:760px){.about-home{grid-template-columns:1fr}.ab-art{max-width:300px}}
+
+/* Footer CTA (form moved back to the Let's talk page): headline left, email + button right, bottoms aligned */
+.foot-top{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:end}
+.foot-say .fmark{margin-bottom:clamp(28px,3.5vw,52px)}
+.foot .t-statement{font-size:clamp(44px,6vw,104px)}
+.foot-cta{display:flex;flex-direction:column;align-items:flex-start;gap:26px;margin:0;padding-bottom:.6em}
+@media(max-width:760px){.foot-top{grid-template-columns:1fr}.foot .t-statement{font-size:clamp(42px,12.5vw,60px)}.foot-cta{padding-bottom:0}}
+
+/* Footer: the same brief form as the Let's talk page, as a light card beside the headline (tops aligned) */
+.foot-top{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:start;gap:40px clamp(30px,5vw,90px)}
+.foot-say .t-statement{font-size:clamp(44px,5.6vw,96px)}
+.fbrief{--card:#FBFAF7;--paper:#F4F2EE;--paper2:#ECEAE4;--strong:#0B0A14;--ink:#2C1412;--soft:#6B5B5E;--rule:rgba(44,20,18,.14);--rule2:rgba(44,20,18,.3);color-scheme:light;color:var(--ink);scroll-margin-top:90px;box-shadow:0 30px 70px -30px rgba(0,0,0,.6)}
+.fbrief .row--brief{cursor:default;border-top:0}
+.fbrief .row--brief:hover{background:var(--red)}
+.fbrief .brief-form{border-top:0}
+.fbrief .btn:hover{background:var(--strong);color:#fff}
+@media(max-width:760px){.foot-top{grid-template-columns:1fr}.foot-say .t-statement{font-size:clamp(42px,12.5vw,60px)}}

@@ -65,32 +65,43 @@ NAVBOX = '''<nav class="navbox" aria-label="Main" data-navbox>
     <a href="/#work"><span class="c" aria-hidden="true">&gt;</span><span class="t">Work</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/#services"><span class="c" aria-hidden="true">&gt;</span><span class="t">What we build</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/#about"><span class="c" aria-hidden="true">&gt;</span><span class="t">About</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <a href="#contact"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
+    <a href="/contact/"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
     <button class="menubox" type="button" aria-label="Show navigation" aria-expanded="false" data-menu-btn><span class="t">Menu</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
   </nav>'''
 
-def footer():
+def brief_form(rows=4):
+    chips = ''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)
+    return f'''          <form class="brief-form" data-brief-form novalidate>
+            <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
+            <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
+            <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label>
+            <fieldset><legend class="t-mono">What do you need?</legend>
+              <div class="chips">{chips}</div>
+            </fieldset>
+            <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="{rows}" required></textarea></label>
+            <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note>Opens your email app with the brief filled in.</p></div>
+          </form>'''
+
+def footer(name=""):
     addr = '<br>'.join(ADDRESS_LINES)
+    foot_cta = '''<div class="foot-cta"><button class="email" type="button" data-copy="hq@vimaksh.in"><span class="chev l" aria-hidden="true">&gt;</span>hq@vimaksh.in<span class="chev r" aria-hidden="true">&lt;</span></button></div>'''
+    foot_form = f'''<div class="block fbrief" id="brief">
+        <div class="row row--brief"><span>Start a project</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
+{brief_form(3)}
+      </div>'''
     return f'''<footer class="foot" id="footer" data-tone="dark">
   <canvas class="edge edge--top" data-edge="night" aria-hidden="true"></canvas>
   <div class="foot-in">
-    <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
     <div class="foot-top">
       <div class="foot-say">
+        <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
         <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
         <h2 class="t-statement">Come build what<br>should exist.</h2>
       </div>
-      <form class="qform" id="contact" data-brief-form novalidate aria-label="Start a project">
-        <div class="qhead t-mono"><span><span class="chev">&gt;</span> Start a project</span><span class="qdots" aria-hidden="true"><i></i><i></i><i></i></span></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">01</span><div class="q2"><label><span class="t-mono ql">Name</span><input name="name" required autocomplete="name"></label><label><span class="t-mono ql">Email</span><input name="email" type="email" required autocomplete="email"></label></div></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">02</span><fieldset class="qset"><legend class="t-mono ql">What do you need?</legend><div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div></fieldset></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">03</span><label><span class="t-mono ql">Tell us about it</span><textarea name="message" rows="2" required></textarea></label></div>
-        <div class="qfoot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><button class="qmail t-mono" type="button" data-copy="hq@vimaksh.in">or hq@vimaksh.in</button></div>
-        <p class="t-mono qnote" data-brief-note aria-live="polite"></p>
-      </form>
+      {foot_form if name != 'contact' else foot_cta}
     </div>
     <div class="cols">
-      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="{MAPS}" target="_blank" rel="noopener">{addr}</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">{LAT}<br>{LON}</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
@@ -110,7 +121,7 @@ def tail():
 '''
 
 def page(name, title, desc, body):
-    html = head(title, desc, name) + HEADER + NAVBOX + chr(10) + menu() + '<main id="main">\n' + body + '\n</main>\n' + footer() + tail()
+    html = head(title, desc, name) + HEADER + NAVBOX + chr(10) + menu() + '<main id="main">\n' + body + '\n</main>\n' + footer(name) + tail()
     path = 'index.html' if name == 'home' else f'{name}/index.html'
     os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
     io.open(path, 'w', encoding='utf-8', newline='\n').write(html)
@@ -187,7 +198,7 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
     <div class="hero-copy">
       <p class="t-mono label"><span class="chev">&gt;</span> Boil the Ocean.</p>
       <h1>We turn <span class="hl"><i aria-hidden="true">&lt;</i>what if?<i aria-hidden="true">&gt;</i></span> into products, platforms and experiments you can actually use.</h1>
-      <div class="hero-cta"><a class="btn" href="#work"><span>Explore our work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="#contact"><span>Start a project</span></a></div>
+      <div class="hero-cta"><a class="btn" href="#work"><span>Explore our work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="/contact/"><span>Start a project</span></a></div>
     </div>
     <p class="hero-meta t-mono"><span>Studio / Bengaluru</span><span>{LAT_S} {LON_S}</span><span data-clock>--:--:--</span></p>
   </div>
@@ -199,7 +210,7 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
   <div class="sec-head">
     <p class="t-mono label"><span class="chev">&gt;</span> Selected work</p>
     <h2 id="work-h" class="t-section">Things we've built,<br>and are building.</h2>
-    <a class="more t-mono" href="#contact">Start yours <span class="chev" aria-hidden="true">&gt;</span></a>
+    <a class="more t-mono" href="/contact/">Start yours <span class="chev" aria-hidden="true">&gt;</span></a>
   </div>
   <div class="grid3">
 {chr(10).join(work_card(w, i) for i, w in enumerate(WORK))}
@@ -272,7 +283,14 @@ contact = f'''<section class="contact-page" aria-labelledby="ct-h">
   </div>
   <div class="ct-right">
     <div class="block">
-      <a class="row row--brief" href="#contact"><span>Start a project</span><span class="pill t-mono">Write a brief <span class="tri" aria-hidden="true">▾</span></span></a>
+      <div class="brief">
+        <button class="row row--brief" type="button" aria-expanded="false" aria-controls="brief-panel" data-brief>
+          <span>Start a project</span><span class="pill t-mono">Submit brief <span class="tri" aria-hidden="true">▸</span></span>
+        </button>
+        <div class="brief-panel" id="brief-panel"><div>
+{brief_form()}
+        </div></div>
+      </div>
       <div class="row"><span>General enquiries</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
       <div class="row"><span>New projects</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
     </div>

@@ -49,16 +49,22 @@ $$('[data-copy]').forEach(el => {
   });
 });
 
-// ---------- Brief form (footer): sending composes an email (there is no form backend) ----------
-$('[data-brief-form]')?.addEventListener('submit', e => {
+// ---------- Let's talk: the brief drops open; sending composes an email (there is no form backend) ----------
+const briefBtn = $('[data-brief]');
+briefBtn?.addEventListener('click', () => {
+  const open = briefBtn.getAttribute('aria-expanded') !== 'true';
+  briefBtn.setAttribute('aria-expanded', String(open)); briefBtn.closest('.brief').classList.toggle('open', open);
+  if (open) setTimeout(() => $('[data-brief-form] input')?.focus({ preventScroll: true }), 400);
+});
+$$('[data-brief-form]').forEach(form => form.addEventListener('submit', e => {
   e.preventDefault();
-  const f = e.currentTarget, note = $('[data-brief-note]');
+  const f = e.currentTarget, note = $('[data-brief-note]', f);
   if (!f.reportValidity()) return;
   const d = new FormData(f), needs = d.getAll('need').join(', ') || 'Not specified';
   const body = `Name: ${d.get('name')}\nEmail: ${d.get('email')}\nCompany: ${d.get('company') || '-'}\nNeeds: ${needs}\n\n${d.get('message')}`;
   location.href = `mailto:hq@vimaksh.in?subject=${encodeURIComponent('Project brief — ' + d.get('name'))}&body=${encodeURIComponent(body)}`;
   if (note) note.textContent = 'Your email app should open with the brief. If not, write to hq@vimaksh.in.';
-});
+}));
 
 // ---------- Work videos: play only while on screen ----------
 const vio = new IntersectionObserver(es => es.forEach(e => { const v = e.target; if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }), { threshold: .2 });

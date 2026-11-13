@@ -34,7 +34,7 @@
     <a href="/#work"><span class="c" aria-hidden="true">&gt;</span><span class="t">Work</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/#services"><span class="c" aria-hidden="true">&gt;</span><span class="t">What we build</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/#about"><span class="c" aria-hidden="true">&gt;</span><span class="t">About</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <a href="#contact"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
+    <a href="/contact/"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
     <button class="menubox" type="button" aria-label="Show navigation" aria-expanded="false" data-menu-btn><span class="t">Menu</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
   </nav>
 <div class="tip t-mono" aria-hidden="true">Copy</div>
@@ -46,7 +46,23 @@
   </div>
   <div class="ct-right">
     <div class="block">
-      <a class="row row--brief" href="#contact"><span>Start a project</span><span class="pill t-mono">Write a brief <span class="tri" aria-hidden="true">▾</span></span></a>
+      <div class="brief">
+        <button class="row row--brief" type="button" aria-expanded="false" aria-controls="brief-panel" data-brief>
+          <span>Start a project</span><span class="pill t-mono">Submit brief <span class="tri" aria-hidden="true">▸</span></span>
+        </button>
+        <div class="brief-panel" id="brief-panel"><div>
+          <form class="brief-form" data-brief-form novalidate>
+            <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
+            <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
+            <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label>
+            <fieldset><legend class="t-mono">What do you need?</legend>
+              <div class="chips"><label><input type="checkbox" name="need" value="Chrome extension"><span>Chrome extension</span></label><label><input type="checkbox" name="need" value="Industry SaaS"><span>Industry SaaS</span></label><label><input type="checkbox" name="need" value="AI automation"><span>AI automation</span></label><label><input type="checkbox" name="need" value="CRM / ERP"><span>CRM / ERP</span></label><label><input type="checkbox" name="need" value="Internal tool"><span>Internal tool</span></label><label><input type="checkbox" name="need" value="Not sure yet"><span>Not sure yet</span></label></div>
+            </fieldset>
+            <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="4" required></textarea></label>
+            <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note>Opens your email app with the brief filled in.</p></div>
+          </form>
+        </div></div>
+      </div>
       <div class="row"><span>General enquiries</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
       <div class="row"><span>New projects</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
     </div>
@@ -63,23 +79,16 @@
 <footer class="foot" id="footer" data-tone="dark">
   <canvas class="edge edge--top" data-edge="night" aria-hidden="true"></canvas>
   <div class="foot-in">
-    <div class="fmark" role="img" aria-label="Vimaksh mark"><svg aria-hidden="true" focusable="false" viewBox="0 0 580 580" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M266.659 265.826L214.296 147.278H249.696L287.309 244.963H269.855L307.714 147.278H341.885L289.768 265.826H266.659Z" fill="#FF5F53"/><path d="M266.659 331.127L214.296 449.675H249.696L287.309 351.99H269.855L307.714 449.675H341.885L289.768 331.127H266.659Z" fill="#FF5F53"/><path d="M324.827 243.982L388.664 131L409.844 159.399L353.929 248.057L343.487 234.055L444.555 205.941L465 233.353L338.653 262.52L324.827 243.982Z" fill="#E32112"/><path d="M255.454 272.926L178.842 168.185L161.129 198.866L227.028 280.377L235.761 265.25L132.098 249.148L115 278.764L243.891 292.954L255.454 272.926Z" fill="#FF5F53"/><path d="M255.454 324.79L178.842 429.531L161.129 398.85L227.028 317.339L235.761 332.467L132.098 348.568L115 318.953L243.891 304.763L255.454 324.79Z" fill="#FF5F53"/><path d="M299.164 324.79L375.776 429.531L393.489 398.85L327.59 317.339L318.857 332.467L422.52 348.568L439.618 318.953L310.727 304.763L299.164 324.79Z" fill="#FF5F53"/></svg></div>
     <div class="foot-top">
       <div class="foot-say">
+        <div class="fmark" role="img" aria-label="Vimaksh mark"><svg aria-hidden="true" focusable="false" viewBox="0 0 580 580" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M266.659 265.826L214.296 147.278H249.696L287.309 244.963H269.855L307.714 147.278H341.885L289.768 265.826H266.659Z" fill="#FF5F53"/><path d="M266.659 331.127L214.296 449.675H249.696L287.309 351.99H269.855L307.714 449.675H341.885L289.768 331.127H266.659Z" fill="#FF5F53"/><path d="M324.827 243.982L388.664 131L409.844 159.399L353.929 248.057L343.487 234.055L444.555 205.941L465 233.353L338.653 262.52L324.827 243.982Z" fill="#E32112"/><path d="M255.454 272.926L178.842 168.185L161.129 198.866L227.028 280.377L235.761 265.25L132.098 249.148L115 278.764L243.891 292.954L255.454 272.926Z" fill="#FF5F53"/><path d="M255.454 324.79L178.842 429.531L161.129 398.85L227.028 317.339L235.761 332.467L132.098 348.568L115 318.953L243.891 304.763L255.454 324.79Z" fill="#FF5F53"/><path d="M299.164 324.79L375.776 429.531L393.489 398.85L327.59 317.339L318.857 332.467L422.52 348.568L439.618 318.953L310.727 304.763L299.164 324.79Z" fill="#FF5F53"/></svg></div>
         <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
         <h2 class="t-statement">Come build what<br>should exist.</h2>
       </div>
-      <form class="qform" id="contact" data-brief-form novalidate aria-label="Start a project">
-        <div class="qhead t-mono"><span><span class="chev">&gt;</span> Start a project</span><span class="qdots" aria-hidden="true"><i></i><i></i><i></i></span></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">01</span><div class="q2"><label><span class="t-mono ql">Name</span><input name="name" required autocomplete="name"></label><label><span class="t-mono ql">Email</span><input name="email" type="email" required autocomplete="email"></label></div></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">02</span><fieldset class="qset"><legend class="t-mono ql">What do you need?</legend><div class="chips"><label><input type="checkbox" name="need" value="Chrome extension"><span>Chrome extension</span></label><label><input type="checkbox" name="need" value="Industry SaaS"><span>Industry SaaS</span></label><label><input type="checkbox" name="need" value="AI automation"><span>AI automation</span></label><label><input type="checkbox" name="need" value="CRM / ERP"><span>CRM / ERP</span></label><label><input type="checkbox" name="need" value="Internal tool"><span>Internal tool</span></label><label><input type="checkbox" name="need" value="Not sure yet"><span>Not sure yet</span></label></div></fieldset></div>
-        <div class="qrow"><span class="qn t-mono" aria-hidden="true">03</span><label><span class="t-mono ql">Tell us about it</span><textarea name="message" rows="2" required></textarea></label></div>
-        <div class="qfoot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><button class="qmail t-mono" type="button" data-copy="hq@vimaksh.in">or hq@vimaksh.in</button></div>
-        <p class="t-mono qnote" data-brief-note aria-live="polite"></p>
-      </form>
+      <div class="foot-cta"><button class="email" type="button" data-copy="hq@vimaksh.in"><span class="chev l" aria-hidden="true">&gt;</span>hq@vimaksh.in<span class="chev r" aria-hidden="true">&lt;</span></button></div>
     </div>
     <div class="cols">
-      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="https://www.google.com/maps/search/?api=1&query=Eshaaya+1629+East+End+Main+Road+Jayanagar+9th+Block+Bengaluru+560041" target="_blank" rel="noopener">3rd Floor, Eshaaya 1629<br>E End Main Rd, 4th T Block East<br>Jayanagar 9th Block, Tilak Nagar<br>Bengaluru, Karnataka 560041</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">12.9210° N<br>77.5960° E</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
