@@ -16,24 +16,18 @@ toggle?.addEventListener('click', () => {
   setTimeout(() => html.classList.remove('theme-anim'), 700);
 });
 
-// ---------- Menu ----------
-const menu = $('#menu'), menuBtn = $('[data-menu-btn]'), menuBack = $('[data-menu-close]');
-const setMenu = (open) => {
-  if (!menu) return;
-  if (open) { menu.hidden = false; requestAnimationFrame(() => menu.classList.add('open')); }
-  else { menu.classList.remove('open'); setTimeout(() => { if (!menu.classList.contains('open')) menu.hidden = true; }, 700); }
-  menuBtn.setAttribute('aria-expanded', String(open)); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  document.body.classList.toggle('menu-open', open);
-  menuBack?.setAttribute('tabindex', open ? '0' : '-1');
-  $$('.menu-links a').forEach((a, i) => { a.style.transitionDelay = open ? 120 + i * 35 + 'ms' : '0ms'; });
-  $$('video', menu).forEach(v => open ? v.play().catch(() => {}) : v.pause());
-  if (open) setTimeout(() => $('.menu-links a')?.focus({ preventScroll: true }), 350); else menuBtn.focus({ preventScroll: true });
+// ---------- Navigation stack: the menu box unfolds the four links above it (no separate menu page) ----------
+const menuBtn = $('[data-menu-btn]'), navbox = $('[data-navbox]');
+const setNav = open => {
+  document.body.classList.toggle('nav-open', open);
+  menuBtn?.setAttribute('aria-expanded', String(open));
+  menuBtn?.setAttribute('aria-label', open ? 'Hide navigation' : 'Show navigation');
+  $$('a', navbox).forEach((a, i, all) => { a.style.transitionDelay = open ? (all.length - 1 - i) * 45 + 'ms' : '0ms'; });
 };
-menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
-// In the menu the header's wordmark becomes "< Back": it says plainly how to get out.
-menuBack?.addEventListener('click', () => setMenu(false));
-addEventListener('keydown', e => { if (e.key === 'Escape' && menu?.classList.contains('open')) setMenu(false); });
-$$('.menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+menuBtn?.addEventListener('click', () => setNav(!document.body.classList.contains('nav-open')));
+$$('a', navbox).forEach(a => a.addEventListener('click', () => setNav(false)));
+addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('nav-open')) { setNav(false); menuBtn?.focus(); } });
+addEventListener('pointerdown', e => { if (document.body.classList.contains('nav-open') && !navbox?.contains(e.target)) setNav(false); });
 
 // ---------- Copy to clipboard, with a label that follows the pointer ----------
 const tip = $('.tip');
@@ -55,13 +49,7 @@ $$('[data-copy]').forEach(el => {
   });
 });
 
-// ---------- Contact: the brief drops open; sending composes an email (there is no form backend) ----------
-const briefBtn = $('[data-brief]');
-briefBtn?.addEventListener('click', () => {
-  const open = briefBtn.getAttribute('aria-expanded') !== 'true';
-  briefBtn.setAttribute('aria-expanded', String(open)); briefBtn.closest('.brief').classList.toggle('open', open);
-  if (open) setTimeout(() => $('[data-brief-form] input')?.focus({ preventScroll: true }), 400);
-});
+// ---------- Brief form (footer): sending composes an email (there is no form backend) ----------
 $('[data-brief-form]')?.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.currentTarget, note = $('[data-brief-note]');
@@ -78,7 +66,7 @@ $$('.card video').forEach(v => { v.playbackRate = reduced ? .7 : 1; vio.observe(
 
 // ---------- Pixel graphics (with the heat gradient, the brand's two graphic elements) ----------
 import { pixelEdge, portrait, bot, skyline, desk, field } from './pixelart.js';
-import { pixelMask, saas, buildArt } from './pixelsaas.js';
+import { pixelMask, saas } from './pixelsaas.js';
 const cssVar = n => getComputedStyle(html).getPropertyValue(n).trim();
 const drawEdges = () => {
   $$('canvas.edge').forEach((c, i) => pixelEdge(c, { color: c.dataset.edge === 'night' ? '#0D0E1C' : cssVar('--paper'), seed: 3 + i }));
@@ -112,7 +100,7 @@ const onScroll = () => {
   const vh = innerHeight;
   if (hero) hero.style.setProperty('--p', Math.min(1, Math.max(0, scrollY / vh)).toFixed(3));
   if (foot) { const r = foot.getBoundingClientRect(); foot.style.setProperty('--fp', Math.min(1, Math.max(0, (vh - r.top) / Math.min(vh, r.height))).toFixed(3)); }
-  if (hdr && foot) { const r = foot.getBoundingClientRect(); hdr.classList.toggle('on-dark', r.top < 60 && r.bottom > 60 && !document.body.classList.contains('menu-open')); }
+  if (hdr && foot) { const r = foot.getBoundingClientRect(); hdr.classList.toggle('on-dark', r.top < 60 && r.bottom > 60); }
   // Header: clear at the top of the page; once you scroll it gets its own backing so it never sits on top of
   // content, slides away while you read down, and comes back as soon as you scroll up.
   if (hdr) {
@@ -123,8 +111,8 @@ const onScroll = () => {
   }
   // The navigation stack folds to just its menu box once you scroll, and turns light over the dark footer.
   // Only the home hero shows the full stack; every other page shows just the menu box.
-  document.body.classList.toggle('nav-compact', !isHome || scrollY > vh * .3);
-  if (foot) document.body.classList.toggle('nav-dark', foot.getBoundingClientRect().top < vh - 40 && !document.body.classList.contains('menu-open'));
+  document.body.classList.toggle('nav-compact', !isHome || innerWidth < 760 || scrollY > vh * .3);
+  if (foot) document.body.classList.toggle('nav-dark', foot.getBoundingClientRect().top < vh - 40);
 };
 // perf: at most one update per frame, however many scroll events arrive.
 let scrollQueued = false;
@@ -158,7 +146,7 @@ $$('[data-year]').forEach(n => { n.textContent = new Date().getFullYear(); });
 })();
 
 // ---------- Gentle reveal ----------
-const rv = $$('.sec-head, .card, .how-frame, .build-head > *, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
+const rv = $$('.sec-head, .card, .about-home > *, .build-head > *, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px' });
 rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
 
@@ -208,27 +196,6 @@ rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 
   if (!reduced) track.classList.add('track--auto');
   requestAnimationFrame(tick);
   addEventListener('resize', sync); sync();
-})();
-
-// ---------- About teaser: six steps on the rail; the mark builds up as they advance ----------
-(() => {
-  const cv = $('canvas[data-px=build]'); if (!cv) return;
-  const btns = $$('[data-step]'), name = $('[data-step-name]'), N = btns.length;
-  let i = 0, timer = 0, art = null;
-  const go = k => {
-    i = (k + N) % N;
-    btns.forEach((b, j) => b.toggleAttribute('aria-current', j === i));
-    if (name) name.textContent = `${String(i + 1).padStart(2, '0')} / ${btns[i].querySelector('.rl').textContent}`;
-    art?.set(i, N);
-  };
-  const auto = () => { clearInterval(timer); if (!reduced) timer = setInterval(() => go(i + 1), 2200); };
-  btns.forEach((b, j) => {
-    b.addEventListener('click', () => { go(j); auto(); });
-    b.addEventListener('pointerenter', () => { clearInterval(timer); go(j); });
-  });
-  $('.rail')?.addEventListener('pointerleave', auto);
-  buildArt(cv).then(a => { art = a; go(reduced ? N - 1 : 0); });
-  new IntersectionObserver(([e]) => { if (e.isIntersecting) auto(); else clearInterval(timer); }).observe(cv);
 })();
 
 // ---------- Home hero: the pixel surface with the mark built from it (loaded only where there is a stage) ----------

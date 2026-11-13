@@ -17,6 +17,8 @@ LAT, LON = '12.9210° N', '77.5960° E'
 LAT_S, LON_S = '12.92° N', '77.60° E'
 MAPS = 'https://www.google.com/maps/search/?api=1&query=' + 'Eshaaya+1629+East+End+Main+Road+Jayanagar+9th+Block+Bengaluru+560041'
 
+NEEDS = ['Chrome extension', 'Industry SaaS', 'AI automation', 'CRM / ERP', 'Internal tool', 'Not sure yet']
+
 # ---------------------------------------------------------------- shared pieces
 def head(title, desc, page):
     return f'''<!DOCTYPE html>
@@ -42,7 +44,6 @@ def head(title, desc, page):
 
 HEADER = f'''<header class="hdr">
   <a class="brandlink" href="/" aria-label="Vimaksh, home">{WM_SVG}</a>
-  <button class="menu-back t-mono" type="button" data-menu-close tabindex="-1"><span class="chev" aria-hidden="true">&lt;</span> Back</button>
   <div class="hdr-r">
     <button class="toggle" type="button" aria-label="Switch to dark theme" data-toggle-theme>
       <span class="ghost g-sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.5 1.5M17.2 17.2l1.5 1.5M5.3 18.7l1.5-1.5M17.2 6.8l1.5-1.5"/></svg></span>
@@ -57,31 +58,15 @@ HEADER = f'''<header class="hdr">
 '''
 
 def menu():
-    return f'''<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
-  <div class="menu-in">
-    <div class="menu-cards">
-      <a class="mcard" href="https://paryatech.in" target="_blank" rel="noopener"><video muted loop playsinline preload="none" src="/video/mumbai.webm"></video><span class="mc-tag t-mono">&gt; 01 Live</span><span class="mc-name">Paryatech <span aria-hidden="true">↗</span></span></a>
-      <a class="mcard" href="https://sachit.vimaksh.in/" target="_blank" rel="noopener"><video muted loop playsinline preload="none" src="/video/blackhole.webm"></video><span class="mc-tag t-mono">&gt; 02 Live</span><span class="mc-name">Sachit <span aria-hidden="true">↗</span></span></a>
-    </div>
-    <nav class="menu-links" aria-label="Menu">
-      <a href="/#work">Work</a>
-      <a href="/#services">What we build</a>
-      <a href="/about/">About us</a>
-      <a href="/careers/">Careers</a>
-      <a href="/contact/">Contact</a>
-    </nav>
-    <div class="menu-chips t-mono"><button type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
-  </div>
-</div>
-<div class="tip t-mono" aria-hidden="true">Copy</div>
+    return '''<div class="tip t-mono" aria-hidden="true">Copy</div>
 '''
 
 NAVBOX = '''<nav class="navbox" aria-label="Main" data-navbox>
     <a href="/#work"><span class="c" aria-hidden="true">&gt;</span><span class="t">Work</span><span class="c" aria-hidden="true">&lt;</span></a>
     <a href="/#services"><span class="c" aria-hidden="true">&gt;</span><span class="t">What we build</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <a href="/about/"><span class="c" aria-hidden="true">&gt;</span><span class="t">About</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <a href="/contact/"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
-    <button class="menubox" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu" data-menu-btn><span class="t">Menu</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
+    <a href="/#about"><span class="c" aria-hidden="true">&gt;</span><span class="t">About</span><span class="c" aria-hidden="true">&lt;</span></a>
+    <a href="#contact"><span class="c" aria-hidden="true">&gt;</span><span class="t">Let's talk</span><span class="c" aria-hidden="true">&lt;</span></a>
+    <button class="menubox" type="button" aria-label="Show navigation" aria-expanded="false" data-menu-btn><span class="t">Menu</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
   </nav>'''
 
 def footer():
@@ -95,13 +80,17 @@ def footer():
         <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
         <h2 class="t-statement">Come build what<br>should exist.</h2>
       </div>
-      <div class="foot-cta">
-        <button class="email" type="button" data-copy="hq@vimaksh.in"><span class="chev l" aria-hidden="true">&gt;</span>hq@vimaksh.in<span class="chev r" aria-hidden="true">&lt;</span></button>
-        <a class="btn" href="/contact/"><span>Start a project</span><span class="chev" aria-hidden="true">&gt;</span></a>
-      </div>
+      <form class="qform" id="contact" data-brief-form novalidate aria-label="Start a project">
+        <p class="t-mono qk"><span class="chev">&gt;</span> Start a project</p>
+        <div class="q2"><label><span class="sr">Name</span><input name="name" placeholder="Name" required autocomplete="name"></label><label><span class="sr">Email</span><input name="email" type="email" placeholder="Email" required autocomplete="email"></label></div>
+        <fieldset><legend class="sr">What do you need?</legend><div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div></fieldset>
+        <label><span class="sr">Tell us about it</span><textarea name="message" rows="2" placeholder="Tell us about it" required></textarea></label>
+        <div class="qfoot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><button class="qmail t-mono" type="button" data-copy="hq@vimaksh.in">or hq@vimaksh.in</button></div>
+        <p class="t-mono qnote" data-brief-note aria-live="polite"></p>
+      </form>
     </div>
     <div class="cols">
-      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/about/">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="/contact/">Contact</a></li></ul></div>
+      <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/careers/">Careers</a></li><li><a href="#contact">Contact</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="{MAPS}" target="_blank" rel="noopener">{addr}</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">{LAT}<br>{LON}</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
@@ -109,7 +98,7 @@ def footer():
   </div>
   <div class="foot-base heat" data-pixel-mask>
     <div class="giant" aria-hidden="true">{WM_SVG}</div>
-    <div class="fine t-mono"><span>© <span data-year>2026</span> Vimaksh</span><span class="fine-r"><a href="/about/#credits">Credits</a><a class="totop" href="#top">Back to top <span aria-hidden="true">↑</span></a></span></div>
+    <div class="fine t-mono"><span>© <span data-year>2026</span> Vimaksh</span><span>Bengaluru, India</span></div>
   </div>
 </footer>
 '''
@@ -129,19 +118,19 @@ def page(name, title, desc, body):
 
 # ---------------------------------------------------------------- content
 WORK = [
-    dict(name='Paryatech', url='https://paryatech.in', host='paryatech.in', video='mumbai', kind='Travel SaaS',
+    dict(name='Paryatech', logo='/marks/paryatech-wordmark.svg', url='https://paryatech.in', host='paryatech.in', video='mumbai', kind='Travel SaaS',
          line='The workspace behind every trip.',
          desc='Brings a travel agency’s enquiries, itineraries, bookings and finances together in one place.'),
-    dict(name='Sachit', url='https://sachit.vimaksh.in/', host='sachit.vimaksh.in', video='blackhole', kind='Support desk',
+    dict(name='Sachit', icon='/logos/sachit.svg', url='https://sachit.vimaksh.in/', host='sachit.vimaksh.in', video='blackhole', kind='Support desk',
          line='A home for every “help!”',
          desc='Turns emails and in-app requests into support tickets your team can organise, track and resolve.'),
-    dict(name='Sarak Ecosystem', url='https://sarakabhiyan.org/', host='sarakabhiyan.org', video='convection', kind='Community platform',
+    dict(name='Sarak Ecosystem', logo='/logos/sarak.png', url='https://sarakabhiyan.org/', host='sarakabhiyan.org', video='convection', kind='Community platform',
          line='Technology that keeps a community connected.',
          desc='A digital ecosystem supporting Sarak’s pathshalas, volunteers, events and community initiatives.'),
-    dict(name='HQly', url='https://hqly.vimaksh.in/', host='hqly.vimaksh.in', video='waves', kind='Company workspace',
+    dict(name='HQly', logo='/logos/hqly.png', url='https://hqly.vimaksh.in/', host='hqly.vimaksh.in', video='waves', kind='Company workspace',
          line='Your company’s everyday HQ.',
          desc='Brings people, office resources, finances and approvals into one shared workspace.'),
-    dict(name='Vaat', url='https://vaat.vimaksh.in/', host='vaat.vimaksh.in', video='sst', kind='Team discussions',
+    dict(name='Vaat', icon='/logos/vaat.svg', url='https://vaat.vimaksh.in/', host='vaat.vimaksh.in', video='sst', kind='Team discussions',
          line='The conversation behind the work.',
          desc='A space for your team to exchange ideas, ask questions and figure things out together.'),
     dict(name='Godspeed', url='https://godspeed.wtf', host='godspeed.wtf', video='clouds', kind='Project management',
@@ -151,16 +140,22 @@ WORK = [
 
 def work_card(w, i):
     n = f'{i + 1:02d}'
+    if w.get('logo'):
+        chip = f'<span class="plogo"><img src="{w["logo"]}" alt="{w["name"]}" loading="lazy"></span>'
+    elif w.get('icon'):
+        chip = f'<span class="plogo plogo--icon"><img src="{w["icon"]}" alt="" loading="lazy"><b>{w["name"]}</b></span>'
+    else:
+        chip = f'<span class="plogo plogo--text"><b>{w["name"]}</b></span>'
     return f'''      <article class="card">
         <a class="media" href="{w['url']}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
           <video muted loop playsinline preload="metadata" src="/video/{w['video']}.webm"></video>
           <span class="veil"></span><span class="num t-mono" aria-hidden="true">{n}</span>
-          <span class="tag t-mono">{w['kind']}</span>
+          {chip}
         </a>
-        <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['host']}</span></div>
+        <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['kind']}</span></div>
         <p class="line">{w['line']}</p>
         <p>{w['desc']}</p>
-        <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener">Visit {w['host']}<span class="sr"> (opens in a new tab)</span> <span class="chev" aria-hidden="true">↗</span></a>
+        <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener"><span class="bt">Visit {w['host']}</span><span class="sr"> (opens in a new tab)</span><span class="trail" aria-hidden="true"><i>&gt;</i><i>&gt;</i><i>&gt;</i></span></a>
       </article>'''
 
 # What we build: custom software only. Each type gets its own pixel graphic and colour (src/v5/pixelart.js → saas).
@@ -192,8 +187,8 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
     <div class="hero-grain" aria-hidden="true"></div>
     <div class="hero-copy">
       <p class="t-mono label"><span class="chev">&gt;</span> Boil the Ocean.</p>
-      <h1>We turn “what if?” into products, platforms and experiments you can actually use.</h1>
-      <div class="hero-cta"><a class="btn" href="#work"><span>Explore our work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="/contact/"><span>Start a project</span></a></div>
+      <h1>We turn <span class="hl"><i aria-hidden="true">&lt;</i>what if?<i aria-hidden="true">&gt;</i></span> into products, platforms and experiments you can actually use.</h1>
+      <div class="hero-cta"><a class="btn" href="#work"><span>Explore our work</span><span class="chev" aria-hidden="true">&gt;</span></a><a class="btn btn--ghost" href="#contact"><span>Start a project</span></a></div>
     </div>
     <p class="hero-meta t-mono"><span>Studio / Bengaluru</span><span>{LAT_S} {LON_S}</span><span data-clock>--:--:--</span></p>
   </div>
@@ -205,27 +200,19 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
   <div class="sec-head">
     <p class="t-mono label"><span class="chev">&gt;</span> Selected work</p>
     <h2 id="work-h" class="t-section">Things we've built,<br>and are building.</h2>
-    <a class="more t-mono" href="/contact/">Start yours <span class="chev" aria-hidden="true">&gt;</span></a>
+    <a class="more t-mono" href="#contact">Start yours <span class="chev" aria-hidden="true">&gt;</span></a>
   </div>
   <div class="grid3">
 {chr(10).join(work_card(w, i) for i, w in enumerate(WORK))}
   </div>
 </section>
 
-<section class="how" aria-labelledby="how-h">
-  <div class="how-frame">
-    <div class="how-text">
-      <p class="t-mono label"><span class="chev">&gt;</span> About us</p>
-      <h2 id="how-h" class="t-big">A small, exacting team in Bengaluru. Strategy, design and engineering sit together, so the people who imagine your software are the people who build it.</h2>
-      <a class="btn btn--dark" href="/about/"><span>About us</span><span class="chev" aria-hidden="true">&gt;</span></a>
-    </div>
-    <div class="how-art">
-      <div class="how-pic heat"><canvas class="px" data-px="build" aria-hidden="true"></canvas><span class="t-mono how-cap" data-step-name>01 / Question</span></div>
-      <ol class="rail t-mono" aria-label="How we work">
-{chr(10).join(f'        <li><button type="button" data-step="{i}"{" aria-current=true" if i == 0 else ""}><span class="rn">{i + 1:02d}</span><span class="rl">{s}</span></button></li>' for i, s in enumerate(STEPS))}
-      </ol>
-    </div>
+<section class="about-home" id="about" aria-labelledby="about-h">
+  <div class="ab-text">
+    <p class="t-mono label"><span class="chev">&gt;</span> About us</p>
+    <h2 id="about-h" class="t-big">Vimaksh builds digital products with a distinct perspective and a practical approach. The company brings clarity to product decisions, care to design and depth to engineering, shaping each experience around the people who use it.</h2>
   </div>
+  <figure class="ab-art"><canvas class="px" data-px="desk" role="img" aria-label="Pixel illustration: a studio desk with a laptop showing the mark's arrows, a red mug and a plant"></canvas></figure>
 </section>
 
 <section class="build" id="services" aria-labelledby="build-h">
@@ -243,76 +230,6 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
     <span class="track-bar" aria-hidden="true"><i data-track-bar></i></span>
     <div class="track-btns"><button type="button" class="tbtn" data-track-prev aria-label="Previous"><span aria-hidden="true">←</span></button><button type="button" class="tbtn" data-track-next aria-label="Next"><span aria-hidden="true">→</span></button></div>
   </div>
-</section>'''
-
-TEAM = [('[PLACEHOLDER: name]', 'Founder · [PLACEHOLDER: role]'), ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]'),
-        ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]'), ('[PLACEHOLDER: name]', '[PLACEHOLDER: role]')]
-
-TEAM_CREDITS = json.load(io.open('public/team/credits.json', encoding='utf-8'))
-BRAND_CREDITS = json.load(io.open('public/brands/credits.json', encoding='utf-8'))
-_n = [0]
-BOT = {
-    'gpt': dict(logo='/brands/chatgpt.svg', status='Typing', dots=True, line='Always mid-sentence'),
-    'claude': dict(logo='/brands/claude.svg', status='02:00 · second coffee', dots=False, line='Writes the code'),
-}
-def person(name, role, kind='human'):
-    if kind == 'human':
-        _n[0] += 1
-        fig = f'<img src="/team/{_n[0]}.jpg" alt="Dummy portrait (stock photo, not a Vimaksh team member)" loading="lazy" width="800" height="1000">'
-        tag = 'Dummy portrait'
-    else:
-        b = BOT[kind]
-        dots = '<i></i><i></i><i></i>' if b['dots'] else ''
-        fig = f'<span class="bot-card bot-card--{kind}"><img class="bot-logo" src="{b["logo"]}" alt="{name} logo" width="160" height="160"><span class="bot-status t-mono"><span class="led"></span>{b["status"]}<span class="typing">{dots}</span></span></span>'
-        tag = 'Honourable mention'
-    return f'''      <figure class="person{' person--bot' if kind != 'human' else ''}">
-        <div class="portrait">{fig}<span class="t-mono ph-tag">{tag}</span></div>
-        <figcaption><b>{name}</b><span class="t-mono">{role}</span></figcaption>
-      </figure>'''
-
-video_credits = ' · '.join(f'<a href="{c["page"]}">{c["title"].rsplit(".", 1)[0]}</a> ({c["license"]})' for c in CREDITS.values())
-about = f'''<section class="page-hero">
-  <p class="t-mono label"><span class="chev">&gt;</span> About us</p>
-  <h1 class="t-hero">Small party.<br>Large quests.</h1>
-</section>
-<div class="scenes">
-  <figure class="scene scene--wide"><canvas class="px" data-px="skyline" role="img" aria-label="Pixel illustration: the Bengaluru skyline at dusk"></canvas><figcaption class="t-mono">Bengaluru, dusk <span>· Dummy image, studio photo to come</span></figcaption></figure>
-  <figure class="scene"><canvas class="px" data-px="desk" role="img" aria-label="Pixel illustration: a studio desk with a laptop showing the mark's arrows, a red mug and a plant"></canvas><figcaption class="t-mono">The desk <span>· Dummy image</span></figcaption></figure>
-</div>
-<section class="split" aria-labelledby="mission-h">
-  <p class="t-mono label" id="mission-h"><span class="chev">&gt;</span> Mission</p>
-  <p class="t-big">We turn “what if?” into products, platforms and experiments you can actually use. Custom software, built from first principles and tested in the world.</p>
-</section>
-<section class="nums" aria-label="Vimaksh in numbers">
-  <div><p class="num">06</p><p class="t-mono">Products &amp; platforms built</p></div>
-  <div class="num-px"><canvas class="px" data-px="field" aria-hidden="true"></canvas><p class="num">100%</p><p class="t-mono">Custom software</p></div>
-  <div><p class="num">01</p><p class="t-mono">Team, start to finish</p></div>
-  <div><p class="num num--sm">{LAT_S}</p><p class="t-mono">Bengaluru, India</p></div>
-</section>
-<section class="principles" aria-labelledby="pr-h">
-  <div class="sec-head"><p class="t-mono label"><span class="chev">&gt;</span> How we think</p><h2 id="pr-h" class="t-section">Four principles.</h2></div>
-  <div class="pgrid">
-    <article><p class="t-mono n">&gt; 01</p><h3>First principles</h3><p>We start from what is true, not from what is usual, and rebuild the answer from there.</p></article>
-    <article><p class="t-mono n">&gt; 02</p><h3>Real enough to test</h3><p>An idea is only as good as its first contact with real people. We get there early.</p></article>
-    <article><p class="t-mono n">&gt; 03</p><h3>Small, exacting team</h3><p>Few people, high standards, one shared map. Everyone ships; nobody hands off.</p></article>
-    <article><p class="t-mono n">&gt; 04</p><h3>Boil the ocean</h3><p>Some problems deserve the impossible version. We pick those on purpose.</p></article>
-  </div>
-</section>
-<section class="team" aria-labelledby="team-h">
-  <div class="sec-head"><p class="t-mono label"><span class="chev">&gt;</span> The party</p><h2 id="team-h" class="t-section">The people behind it.</h2></div>
-  <div class="tgrid">
-{chr(10).join(person(n, r) for n, r in TEAM)}
-  </div>
-  <div class="sec-head sec-head--mini"><p class="t-mono label"><span class="chev">&gt;</span> Honourable mentions</p><p class="t-mono soft">Not on payroll. Always online.</p></div>
-  <div class="tgrid tgrid--bots">
-{person('ChatGPT', 'Thinks out loud · always mid-sentence', 'gpt')}
-{person('Claude', 'Writes the code · 2 a.m., second coffee', 'claude')}
-  </div>
-</section>
-<p class="photo-credits" id="credits">Credits. Dummy portraits from Wikimedia Commons, used as placeholders: {' · '.join(f'<a href="{c["page"]}">{c["author"] or c["title"]}</a> ({c["license"]})' for c in TEAM_CREDITS)}. Work-card footage from Wikimedia Commons: {video_credits}. ChatGPT and Claude marks are trademarks of OpenAI and Anthropic, shown here only as a nod; files: {' · '.join(f'<a href="{BRAND_CREDITS[k]["page"]}">{BRAND_CREDITS[k]["title"]}</a>' for k in ('chatgpt', 'claude'))}.</p>
-<section class="band" aria-label="Join us">
-  <h2 class="t-section">Want to join the party?</h2>
-  <a class="btn" href="/careers/"><span>See careers</span><span class="chev" aria-hidden="true">&gt;</span></a>
 </section>'''
 
 ROLES = [('[PLACEHOLDER: role title]', 'Design', 'Bengaluru · Full-time'), ('[PLACEHOLDER: role title]', 'Engineering', 'Bengaluru / Remote · Full-time'),
@@ -349,7 +266,6 @@ careers = f'''<section class="page-hero page-hero--careers">
   </ol>
 </section>'''
 
-NEEDS = ['Chrome extension', 'Industry SaaS', 'AI automation', 'CRM / ERP', 'Internal tool', 'Not sure yet']
 contact = f'''<section class="contact-page" aria-labelledby="ct-h">
   <div class="ct-left">
     <p class="t-mono label"><span class="chev">&gt;</span> Contact</p>
@@ -357,23 +273,7 @@ contact = f'''<section class="contact-page" aria-labelledby="ct-h">
   </div>
   <div class="ct-right">
     <div class="block">
-      <div class="brief">
-        <button class="row row--brief" type="button" aria-expanded="false" aria-controls="brief-panel" data-brief>
-          <span>Start a project</span><span class="pill t-mono">Submit brief <span class="tri" aria-hidden="true">▸</span></span>
-        </button>
-        <div class="brief-panel" id="brief-panel"><div>
-          <form class="brief-form" data-brief-form novalidate>
-            <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
-            <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
-            <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label>
-            <fieldset><legend class="t-mono">What do you need?</legend>
-              <div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div>
-            </fieldset>
-            <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="4" required></textarea></label>
-            <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note>Opens your email app with the brief filled in.</p></div>
-          </form>
-        </div></div>
-      </div>
+      <a class="row row--brief" href="#contact"><span>Start a project</span><span class="pill t-mono">Write a brief <span class="tri" aria-hidden="true">▾</span></span></a>
       <div class="row"><span>General enquiries</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
       <div class="row"><span>New projects</span><button class="pill t-mono" type="button" data-copy="hq@vimaksh.in">hq@vimaksh.in</button></div>
     </div>
@@ -388,6 +288,5 @@ contact = f'''<section class="contact-page" aria-labelledby="ct-h">
 </section>'''
 
 page('home', 'Vimaksh — Boil the Ocean.', 'Vimaksh builds custom software: Chrome extensions, industry SaaS, AI automation, CRM and ERP. We turn “what if?” into products you can actually use.', home)
-page('about', 'About — Vimaksh', 'Small party. Large quests. About Vimaksh.', about)
 page('careers', 'Careers — Vimaksh', 'Careers at Vimaksh: where curiosity, craft and code work together.', careers)
 page('contact', 'Contact — Vimaksh', f'Start a project with Vimaksh: hq@vimaksh.in, {ADDRESS}.', contact)

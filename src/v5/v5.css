@@ -313,7 +313,6 @@ html[data-page=careers] .rv{opacity:1!important;transform:none!important}
   .hero-copy{width:auto;right:var(--pad);top:calc(var(--hdr) + 18px)}
   .hero-copy h1{font-size:27px;margin-bottom:20px}
   .hero-meta span:nth-child(2){display:none}
-  .navbox{width:auto;right:12px;bottom:12px}.navbox a{display:none}
   .grid3,.pgrid,.tgrid,.tgrid--bots,.values,.steps,.nums{grid-template-columns:1fr}
   .nums>div{border-left:0;padding-left:0;border-top:1px solid var(--rule)}
   .sec-head{grid-template-columns:1fr}
@@ -348,7 +347,7 @@ html[data-page=careers] .rv{opacity:1!important;transform:none!important}
 .menubox[aria-expanded=true] .dots i{transform:scale(0)}
 .menubox[aria-expanded=true] .dots::before{transform:translate(-50%,-50%) rotate(45deg)}
 .menubox[aria-expanded=true] .dots::after{transform:translate(-50%,-50%) rotate(-45deg)}
-body.nav-compact .navbox a,body.menu-open .navbox a{opacity:0;transform:translateY(10px);visibility:hidden;pointer-events:none}
+body.nav-compact:not(.nav-open) .navbox a{opacity:0;transform:translateY(10px);visibility:hidden;pointer-events:none}
 body.nav-dark .navbox{color:#F4F5FF}
 body.nav-dark .navbox a{border-color:rgba(221,228,255,.3);background:rgba(23,25,46,.6)}
 body.nav-dark .menubox{background:#F4F5FF;color:var(--night);border-color:#F4F5FF}
@@ -379,8 +378,7 @@ canvas.edge,canvas.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .portrait canvas{display:block;width:100%;height:100%}
 .portrait .ph-tag{right:auto;padding:5px 8px;background:rgba(244,242,238,.85);color:#2C1412}
 @media(max-width:760px){
-  .navbox{width:150px;right:12px;bottom:12px}
-  .navbox a{display:none!important}
+  .navbox{width:min(220px,calc(100vw - 24px));right:12px;bottom:12px}
   .menu-chips{padding-right:0;padding-bottom:56px}
 }
 
@@ -417,7 +415,7 @@ canvas.edge,canvas.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* ================= v8: custom-software focus, real work, mobile pass ================= */
 /* Subpages show only the menu box (the full stack is a home-hero thing); no flash before the script runs. */
-html:not([data-page=home]) .navbox a{display:none}
+html:not([data-page=home]) body:not(.nav-open) .navbox a{opacity:0;visibility:hidden;pointer-events:none}
 
 /* Menu open: the wordmark gives way to a plain "< Back" */
 .menu-back{position:absolute;left:var(--pad);top:50%;display:inline-flex;align-items:center;gap:10px;padding:12px 15px;border:1px solid var(--rule2);background:var(--chip);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--strong);cursor:pointer;font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:0;visibility:hidden;transform:translate(-8px,-50%);transition:opacity .35s,transform .45s var(--ease),visibility .35s,background .2s,color .2s}
@@ -579,3 +577,65 @@ body.menu-open .hdr{transform:none;background:transparent;border-bottom-color:tr
 .build-head{grid-template-columns:1fr;gap:18px}
 .build-copy{max-width:1040px}
 .track--auto{scroll-snap-type:none;scroll-behavior:auto}
+
+/* ================= v9 ================= */
+/* The menu box unfolds the four links above it, staggered from the bottom */
+body.nav-open .navbox a{opacity:1;transform:none;visibility:visible;pointer-events:auto}
+body.nav-open .menubox{background:var(--red);border-color:var(--red);color:#fff}
+
+/* Hero: "what if?" held inside the mark's own < > */
+.hl{white-space:nowrap;color:var(--red)}
+.hl i{font-style:normal;font-family:var(--mono);font-weight:500;font-size:.78em;vertical-align:.06em;margin:0 .08em;color:var(--red)}
+
+/* Work: the project's own logo on a paper chip */
+.plogo{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:8px;height:42px;padding:8px 12px;background:rgba(251,250,247,.95);color:#0B0A14;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.plogo img{display:block;height:100%;width:auto;max-width:150px;object-fit:contain}
+.plogo--icon img{height:22px}
+.plogo b{font-weight:600;font-size:16px;letter-spacing:-.02em}
+.plogo--text{padding:8px 14px}
+/* Visit bar: on hover the label steps left and a trail of > lights up one by one, like a prompt moving out */
+.card .bar{justify-content:space-between;padding:13px 16px;overflow:hidden}
+.card .bar .bt{transition:transform .35s var(--ease)}
+.trail{display:inline-flex;gap:2px;color:var(--red)}
+.trail i{font-style:normal;opacity:.25;transform:translateX(-4px);transition:opacity .25s,transform .35s var(--ease)}
+.trail i:first-child{opacity:1;transform:none}
+.card .bar:hover{background:transparent;color:var(--strong);border-color:var(--strong)}
+.card .bar:hover .bt{transform:translateX(4px)}
+.card .bar:hover .trail i{opacity:1;transform:none}
+.card .bar:hover .trail i:nth-child(2){transition-delay:.06s}
+.card .bar:hover .trail i:nth-child(3){transition-delay:.12s}
+.card:hover .bar .trail i:nth-child(2){opacity:.6;transform:none}
+
+/* About on the home page: copy across most of the width, the desk picture beside it */
+.about-home{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:clamp(28px,5vw,90px);align-items:end;padding:clamp(70px,8vw,130px) var(--pad);border-top:1px solid var(--rule)}
+.about-home .t-big{font-size:clamp(26px,2.7vw,46px)}
+.ab-art{margin:0}
+.ab-art canvas{display:block;width:100%;height:auto;background:var(--card)}
+
+/* Footer: a compact brief form where the email and CTA were */
+.qform{display:grid;gap:12px;width:100%;max-width:560px;justify-self:end}
+.qk{margin:0 0 2px;color:#9aa0c8}
+.q2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qform input:not([type=checkbox]),.qform textarea{width:100%;padding:11px 0;border:0;border-bottom:1px solid rgba(221,228,255,.25);background:transparent;color:#F4F5FF;font:inherit;font-size:16px;outline:none;transition:border-color .2s;resize:none}
+.qform ::placeholder{color:#7b81aa}
+.qform input:focus,.qform textarea:focus{border-color:var(--coral)}
+.qform fieldset{border:0;margin:4px 0 0;padding:0}
+.qform .chips{gap:6px}
+.qform .chips span{padding:7px 10px;font-size:10px;border-color:rgba(221,228,255,.25);color:#ECEEFF}
+.qform .chips input:checked+span{background:var(--red);border-color:var(--red);color:#fff}
+.qfoot{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;margin-top:6px}
+.qmail{padding:0;border:0;background:none;color:#9aa0c8;cursor:pointer;border-bottom:1px solid rgba(221,228,255,.25)}
+.qmail:hover{color:#fff;border-color:var(--coral)}
+.qnote{margin:0;min-height:1em;color:#9aa0c8}
+.foot-top{align-items:center}
+.foot .fine span:last-child{opacity:.8}
+
+@media(max-width:760px){
+  .about-home{grid-template-columns:1fr;align-items:start}
+  .about-home .t-big{font-size:clamp(23px,6.4vw,28px)}
+  .plogo{height:36px;top:12px;left:12px}
+  .qform{justify-self:stretch;max-width:none}
+  .q2{grid-template-columns:1fr}
+}
+.plogo{height:48px;padding:7px 12px}
+@media(max-width:760px){.plogo{height:40px}}

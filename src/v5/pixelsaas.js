@@ -111,36 +111,3 @@ export function saas(canvas, kind, c) {
     for (let r = 3; r <= 9; r += 3) for (let a = -.8; a <= .8; a += .1) px(Math.round(34 + Math.cos(a) * r), Math.round(10 + Math.sin(a) * r), r === 9 ? l : c);
   }
 }
-
-// ---------- About teaser: the mark assembles pixel by pixel as the work moves from question to ship ----------
-export async function buildArt(canvas) {
-  const W = 56, H = 56;
-  const { ctx, px } = grid(canvas, W, H);
-  const svg = await (await fetch('/marks/vimaksh-mark.svg')).text();
-  const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
-  const S = 40, off = document.createElement('canvas'); off.width = off.height = S;
-  const g = off.getContext('2d'), vb = [115, 131, 350, 318.7], sc = S / vb[2];
-  g.setTransform(sc, 0, 0, sc, -vb[0] * sc, -vb[1] * sc + (S - vb[3] * sc) / 2);
-  doc.querySelectorAll('path').forEach(p => { g.fillStyle = /E32112/i.test(p.getAttribute('fill')) ? '#00ff00' : '#ff0000'; g.fill(new Path2D(p.getAttribute('d'))); });
-  const data = g.getImageData(0, 0, S, S).data, cells = [];
-  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-    const i = (y * S + x) * 4, r = data[i], gr = data[i + 1];
-    if (Math.max(r, gr) > 120) cells.push({ x: x + 8, y: y + 6, red: gr > r, o: hash(x, y, 11) * .55 + (1 - y / S) * .45 });
-  }
-  cells.sort((a, b) => a.o - b.o);           // roughly bottom-up, with noise, so it reads as being assembled
-  let shown = 0, target = 0, raf = 0;
-  const draw = () => {
-    ctx.clearRect(0, 0, W, H);
-    for (let y = 42; y < H; y++) for (let x = 0; x < W; x++) { const k = (y - 42) / 14; if (k > BAYER[y & 3][x & 3] * 1.1 && hash(x, y, 2) > .35) px(x, y, '#0D0E1C'); }
-    const n = Math.round(shown * cells.length);
-    cells.forEach((c, i) => px(c.x, c.y, i < n ? (c.red ? '#0D0E1C' : '#FFF4EE') : 'rgba(255,255,255,.16)'));
-    for (let i = n; i < Math.min(cells.length, n + 6); i++) px(cells[i].x, cells[i].y - 2 - (i - n), 'rgba(255,255,255,.75)');
-  };
-  const step = () => {
-    const d = target - shown;
-    if (Math.abs(d) < .002) { shown = target; draw(); raf = 0; return; }
-    shown += d * .1; draw(); raf = requestAnimationFrame(step);
-  };
-  draw();
-  return { set(i, steps) { target = (i + 1) / steps; if (!raf) raf = requestAnimationFrame(step); } };
-}
