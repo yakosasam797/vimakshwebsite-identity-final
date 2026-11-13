@@ -574,3 +574,8 @@ body.menu-open .hdr{transform:none;background:transparent;border-bottom-color:tr
 .foot-base .giant{font-size:0;line-height:0;padding:0 0 clamp(18px,2.6vw,42px);color:#fff}
 .foot-base .giant .wm{display:block;width:100%;height:auto}
 @media(max-width:760px){.brandlink .wm{height:20px}}
+
+/* What we build: copy aligned left; the track drifts on its own, so no snapping fights the motion */
+.build-head{grid-template-columns:1fr;gap:18px}
+.build-copy{max-width:1040px}
+.track--auto{scroll-snap-type:none;scroll-behavior:auto}

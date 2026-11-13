@@ -158,24 +158,55 @@ $$('[data-year]').forEach(n => { n.textContent = new Date().getFullYear(); });
 })();
 
 // ---------- Gentle reveal ----------
-const rv = $$('.sec-head, .card, .how-frame, .build-head > *, .bcard, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
+const rv = $$('.sec-head, .card, .how-frame, .build-head > *, .split > *, .nums > div, .pgrid article, .person, .band > *, .foot-top > *, .cols > div');
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px' });
 rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
 
-// ---------- What we build: a sideways track of cards, with arrows and a progress bar ----------
+// ---------- What we build: an endless sideways track that drifts slowly on its own ----------
+// The cards are repeated once so the drift loops without a seam. It pauses while you hover, touch or use
+// the arrows, then picks up again; with reduced motion it stays still and works as a plain scroller.
 (() => {
   const track = $('[data-track]'); if (!track) return;
   const bar = $('[data-track-bar]'), prev = $('[data-track-prev]'), next = $('[data-track-next]');
-  const stepW = () => { const c = $('.bcard', track); return c ? c.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : 300; };
+  const originals = $$('.bcard', track);
+  originals.forEach(c => { const k = c.cloneNode(true); k.setAttribute('aria-hidden', 'true'); track.append(k); });
+  drawSaas();
+  const gap = () => parseFloat(getComputedStyle(track).columnGap) || 0;
+  const stepW = () => originals[0].getBoundingClientRect().width + gap();
+  const setW = () => originals.length * stepW();
+  const SPEED = 28;                                   // px per second: slow enough to read while it moves
+  let pos = 0, paused = 0, hold = false, last = performance.now(), onScreen = false;
   const sync = () => {
-    const max = track.scrollWidth - track.clientWidth, p = max > 0 ? track.scrollLeft / max : 1;
-    if (bar) { bar.style.width = (track.clientWidth / track.scrollWidth * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p * (track.scrollWidth / track.clientWidth - 1) * 100).toFixed(2)}%)`; }
-    if (prev) prev.disabled = track.scrollLeft < 4;
-    if (next) next.disabled = track.scrollLeft > max - 4;
+    const w = setW(), p = (((track.scrollLeft % w) + w) % w) / w, vis = Math.min(1, track.clientWidth / w);
+    if (bar) { bar.style.width = (vis * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p / vis * 100).toFixed(2)}%)`; }
   };
-  prev?.addEventListener('click', () => track.scrollBy({ left: -stepW(), behavior: reduced ? 'auto' : 'smooth' }));
-  next?.addEventListener('click', () => track.scrollBy({ left: stepW(), behavior: reduced ? 'auto' : 'smooth' }));
+  const pauseFor = ms => { paused = performance.now() + ms; };
+  const jump = dir => {
+    pauseFor(2600);
+    if (dir < 0 && track.scrollLeft < stepW()) track.scrollLeft += setW();
+    if (dir > 0 && track.scrollLeft >= setW()) track.scrollLeft -= setW();
+    track.scrollBy({ left: dir * stepW(), behavior: reduced ? 'auto' : 'smooth' });
+  };
+  prev?.addEventListener('click', () => jump(-1));
+  next?.addEventListener('click', () => jump(1));
+  track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hold = true; });
+  track.addEventListener('pointerleave', () => { hold = false; pauseFor(500); });
+  track.addEventListener('touchstart', () => pauseFor(4000), { passive: true });
+  track.addEventListener('wheel', () => pauseFor(2500), { passive: true });
+  track.addEventListener('focusin', () => { hold = true; });
+  track.addEventListener('focusout', () => { hold = false; });
   track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; }).observe(track);
+  const tick = now => {
+    requestAnimationFrame(tick);
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (reduced || hold || !onScreen || document.hidden || now < paused) { pos = track.scrollLeft; return; }
+    const w = setW();
+    pos += SPEED * dt; if (pos >= w) pos -= w;
+    track.scrollLeft = pos;
+  };
+  if (!reduced) track.classList.add('track--auto');
+  requestAnimationFrame(tick);
   addEventListener('resize', sync); sync();
 })();
 
