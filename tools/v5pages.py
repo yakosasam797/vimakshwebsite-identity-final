@@ -74,17 +74,17 @@ def footer():
     return f'''<footer class="foot" id="footer" data-tone="dark">
   <canvas class="edge edge--top" data-edge="night" aria-hidden="true"></canvas>
   <div class="foot-in">
+    <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
     <div class="foot-top">
       <div class="foot-say">
-        <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
         <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
         <h2 class="t-statement">Come build what<br>should exist.</h2>
       </div>
       <form class="qform" id="contact" data-brief-form novalidate aria-label="Start a project">
-        <p class="t-mono qk"><span class="chev">&gt;</span> Start a project</p>
-        <div class="q2"><label><span class="sr">Name</span><input name="name" placeholder="Name" required autocomplete="name"></label><label><span class="sr">Email</span><input name="email" type="email" placeholder="Email" required autocomplete="email"></label></div>
-        <fieldset><legend class="sr">What do you need?</legend><div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div></fieldset>
-        <label><span class="sr">Tell us about it</span><textarea name="message" rows="2" placeholder="Tell us about it" required></textarea></label>
+        <div class="qhead t-mono"><span><span class="chev">&gt;</span> Start a project</span><span class="qdots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="qrow"><span class="qn t-mono" aria-hidden="true">01</span><div class="q2"><label><span class="t-mono ql">Name</span><input name="name" required autocomplete="name"></label><label><span class="t-mono ql">Email</span><input name="email" type="email" required autocomplete="email"></label></div></div>
+        <div class="qrow"><span class="qn t-mono" aria-hidden="true">02</span><fieldset class="qset"><legend class="t-mono ql">What do you need?</legend><div class="chips">{''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)}</div></fieldset></div>
+        <div class="qrow"><span class="qn t-mono" aria-hidden="true">03</span><label><span class="t-mono ql">Tell us about it</span><textarea name="message" rows="2" required></textarea></label></div>
         <div class="qfoot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><button class="qmail t-mono" type="button" data-copy="hq@vimaksh.in">or hq@vimaksh.in</button></div>
         <p class="t-mono qnote" data-brief-note aria-live="polite"></p>
       </form>
@@ -153,7 +153,6 @@ def work_card(w, i):
           {chip}
         </a>
         <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['kind']}</span></div>
-        <p class="line">{w['line']}</p>
         <p>{w['desc']}</p>
         <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener"><span class="bt">Visit {w['host']}</span><span class="sr"> (opens in a new tab)</span><span class="trail" aria-hidden="true"><i>&gt;</i><i>&gt;</i><i>&gt;</i></span></a>
       </article>'''

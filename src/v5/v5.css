@@ -639,3 +639,50 @@ body.nav-open .menubox{background:var(--red);border-color:var(--red);color:#fff}
 }
 .plogo{height:48px;padding:7px 12px}
 @media(max-width:760px){.plogo{height:40px}}
+
+/* ================= v10 ================= */
+/* About: picture left, copy right, same type size as "What we build", both centred on one line */
+.about-home{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);align-items:center}
+.about-home .ab-art{order:-1}
+.about-home .t-big{font-size:clamp(24px,2.5vw,42px)}
+.about-home .label{margin:0 0 18px}
+
+/* Footer: mark on its own line; headline and form start on the same line */
+.foot-in>.fmark{margin-bottom:clamp(28px,3.5vw,52px)}
+.foot-top{align-items:start;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.foot-say .label{margin-top:0}
+
+/* The brief, as a numbered card rather than loose lines */
+.qform{position:relative;max-width:600px;gap:0;padding:0;background:var(--night2);border:1px solid rgba(221,228,255,.14);box-shadow:0 24px 60px -30px rgba(0,0,0,.7)}
+.qform::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:3px;background:linear-gradient(90deg,var(--red),var(--coral) 55%,var(--royal))}
+.qhead{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(221,228,255,.1);color:#9aa0c8}
+.qdots{display:flex;gap:4px}
+.qdots i{width:6px;height:6px;background:rgba(221,228,255,.25)}
+.qdots i:first-child{background:var(--coral)}
+.qrow{display:grid;grid-template-columns:28px 1fr;gap:14px;margin:0;padding:16px 20px;border:0;border-bottom:1px solid rgba(221,228,255,.08)}
+.qrow>label,.qrow>div{min-width:0}
+.qn{padding-top:2px;color:var(--coral)}
+.ql{display:block;margin-bottom:6px;padding:0;color:#7b81aa;font-size:10px}
+.qform legend.ql{float:left;width:100%}
+.qform .chips{clear:both}
+.qform input:not([type=checkbox]),.qform textarea{padding:10px 12px;border:1px solid rgba(221,228,255,.14);background:rgba(13,14,28,.55);font-size:15px;transition:border-color .2s,background .2s}
+.qform input:focus,.qform textarea:focus{border-color:var(--coral);background:rgba(13,14,28,.9)}
+.qform .chips span{background:rgba(13,14,28,.55);transition:background .2s,border-color .2s,color .2s}
+.qform .chips label:hover span{border-color:rgba(221,228,255,.5)}
+.qfoot{margin:0;padding:16px 20px 18px}
+.qnote:empty{display:none}
+.qnote{padding:0 20px 16px}
+.qform:focus-within .qdots i:nth-child(2){background:var(--coral)}
+
+@media(max-width:760px){
+  .about-home{grid-template-columns:1fr}
+  .about-home .ab-art{order:0}
+  .about-home .t-big{font-size:clamp(23px,6.4vw,28px)}
+  .foot-top{grid-template-columns:1fr}
+  .qrow{grid-template-columns:1fr;gap:6px;padding:14px 16px}
+  .qn{display:none}
+  .qhead,.qfoot{padding-left:16px;padding-right:16px}
+}
+.qset{min-width:0;margin:0;padding:0;border:0}
+.foot .t-statement{font-size:clamp(44px,5.4vw,92px)}
+@media(max-width:760px){.foot .t-statement{font-size:clamp(42px,12.5vw,60px)}}
