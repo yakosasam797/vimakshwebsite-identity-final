@@ -1,6 +1,6 @@
 // Measure smoothness: frame times while idle on the hero and while scrolling the whole home page.
 // node tools/perf.mjs [port]
-import { chromium } from 'file:///D:/vimakh%20logo/src/node_modules/playwright/index.mjs';
+import { chromium } from '../../src/node_modules/playwright/index.mjs';
 const port = process.argv[2] || '4183', css = process.argv[3] || '', q = process.argv[4] || '';
 const b = await chromium.launch({ headless: true, executablePath: process.env.CHROME, args: ['--use-angle=d3d11', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required'] });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });

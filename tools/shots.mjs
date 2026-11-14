@@ -1,5 +1,5 @@
 // Screenshot v5 pages: node tools/shots.mjs [tag] — writes previews/*.png and prints errors/overflow.
-import { chromium } from 'file:///D:/vimakh%20logo/src/node_modules/playwright/index.mjs';
+import { chromium } from '../../src/node_modules/playwright/index.mjs';
 const b = await chromium.launch({ headless: true, executablePath: process.env.CHROME, args: ['--use-angle=d3d11','--ignore-gpu-blocklist','--autoplay-policy=no-user-gesture-required'] });
 const errs = [];
 const plan = JSON.parse(process.argv[2] || '[]');

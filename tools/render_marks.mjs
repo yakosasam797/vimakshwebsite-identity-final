@@ -1,6 +1,6 @@
 // Render the four service images (3D mark, one colourway each) in light and dark, as still product shots.
 // Needs the dev server: npx vite --port 4190   then: node tools/render_marks.mjs
-import { chromium } from 'file:///D:/vimakh%20logo/src/node_modules/playwright/index.mjs';
+import { chromium } from '../../src/node_modules/playwright/index.mjs';
 import { mkdirSync } from 'node:fs';
 const S = {
   brand:    { main: 'FF5E55', accent: 'E42114', angle: -25, light: ['F3E5DF', 'F6EAE5'], dark: ['22121A', '27151D'] },
