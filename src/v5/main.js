@@ -1,4 +1,5 @@
 // Vimaksh v5: one script for every page.
+import { checkEmail, checkPhone } from './validate.js';
 const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const html = document.documentElement;
@@ -56,12 +57,29 @@ briefBtn?.addEventListener('click', () => {
   briefBtn.setAttribute('aria-expanded', String(open)); briefBtn.closest('.brief').classList.toggle('open', open);
   if (open) setTimeout(() => $('[data-brief-form] input')?.focus({ preventScroll: true }), 400);
 });
+// Email and phone are checked as you go: quietly while typing, with the message shown once you leave the field
+// (or press send). The worker runs the same checks.
+const checks = { email: checkEmail, phone: checkPhone };
+const runCheck = (input, show) => {
+  const msg = checks[input.dataset.check](input.value), err = input.parentElement.querySelector('.ferr');
+  input.setCustomValidity(msg);
+  if (show || !msg) { input.classList.toggle('bad', !!msg); if (err) err.textContent = msg; }
+  return !msg;
+};
+$$('[data-check]').forEach(input => {
+  input.addEventListener('blur', () => { if (input.value.trim()) runCheck(input, true); });
+  input.addEventListener('input', () => runCheck(input, input.classList.contains('bad')));
+});
+
 // The brief goes to /api/brief (worker/index.js), which emails it to hq@vimaksh.in and sends the sender a confirmation.
 const formStart = performance.now();
 $$('[data-brief-form]').forEach(form => form.addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.currentTarget, note = $('[data-brief-note]', f), btn = $('button[type=submit]', f), label = $('span', btn);
-  if (f.dataset.busy || !f.reportValidity()) return;
+  if (f.dataset.busy) return;
+  const firstBad = $$('[data-check]', f).filter(i => !runCheck(i, true))[0];
+  if (firstBad) { firstBad.focus(); return; }          // our own message is already under the field
+  if (!f.reportValidity()) return;
   const d = Object.fromEntries(new FormData(f));
   d.elapsed = Math.round(performance.now() - formStart); d.page = location.pathname;
   f.dataset.busy = '1'; btn.disabled = true; const was = label.textContent; label.textContent = 'Sending…';
@@ -122,7 +140,7 @@ let lastY = scrollY;
 const onScroll = () => {
   const vh = innerHeight;
   if (hero) hero.style.setProperty('--p', Math.min(1, Math.max(0, scrollY / vh)).toFixed(3));
-  if (foot) { const r = foot.getBoundingClientRect(); foot.style.setProperty('--fp', Math.min(1, Math.max(0, (vh - r.top) / Math.min(vh, r.height))).toFixed(3)); }
+  // (the footer used to drift with a scroll-linked parallax; removed, it read as lag)
   if (hdr && foot) { const r = foot.getBoundingClientRect(); hdr.classList.toggle('on-dark', r.top < 60 && r.bottom > 60); }
   // Header: clear at the top of the page; once you scroll it gets its own backing so it never sits on top of
   // content, slides away while you read down, and comes back as soon as you scroll up.

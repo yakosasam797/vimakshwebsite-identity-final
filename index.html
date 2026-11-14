@@ -205,8 +205,8 @@
           <form class="brief-form" data-brief-form novalidate>
             <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
             <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
-            <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
-            <div class="f2"><label><span class="t-mono">Phone</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" pattern="[0-9+()\-\s]{7,}" placeholder="+91"></label>
+            <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email" maxlength="254" data-check="email"><span class="ferr" aria-live="polite"></span></label></div>
+            <div class="f2"><label><span class="t-mono">Phone</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" maxlength="22" placeholder="+91 98765 43210" data-check="phone"><span class="ferr" aria-live="polite"></span></label>
             <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label></div>
             <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="3" required></textarea></label>
             <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note aria-live="polite"></p></div>
@@ -215,7 +215,6 @@
     </div>
     <div class="cols">
       <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/contact/">Contact</a></li></ul></div>
-      <div><p class="t-mono k">Legal</p><ul><li><a href="/terms/">Terms &amp; conditions</a></li><li><a href="/privacy/">Privacy policy</a></li><li><a href="/cookies/">Cookie policy</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="https://maps.app.goo.gl/ktwso9ycC2Ufo8Tt7" target="_blank" rel="noopener">3rd Floor, Eshaaya 1629<br>E End Main Rd, 4th T Block East<br>Jayanagar 9th Block, Tilak Nagar<br>Bengaluru, Karnataka 560041</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">12.9210° N<br>77.5960° E</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>

@@ -5,6 +5,7 @@
 //   local:  .dev.vars           RESEND_API_KEY=re_...
 //   live:   npx wrangler secret put RESEND_API_KEY
 import { teamEmail, confirmEmail } from './emails.js';
+import { checkEmail, checkPhone, formatPhone } from '../src/v5/validate.js';
 
 const FROM = 'Vimaksh <services@mail.vimaksh.in>';
 const TEAM = 'hq@vimaksh.in';
@@ -34,8 +35,9 @@ async function brief(request, env) {
   for (const k of Object.keys(LIMITS)) b[k] = String(input[k] ?? '').trim().slice(0, LIMITS[k]);
   const missing = ['name', 'email', 'phone', 'message'].filter(k => !b[k]);
   if (missing.length) return json({ ok: false, error: `Please fill in: ${missing.join(', ')}.` }, 422);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(b.email)) return json({ ok: false, error: 'Please check your email address.' }, 422);
-  if (b.phone.replace(/\D/g, '').length < 7) return json({ ok: false, error: 'Please check your phone number.' }, 422);
+  const bad = checkEmail(b.email) || checkPhone(b.phone);
+  if (bad) return json({ ok: false, error: bad }, 422);
+  b.phone = formatPhone(b.phone);
 
   b.receivedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) + ' IST';
   b.page = String(input.page || '').slice(0, 200);
