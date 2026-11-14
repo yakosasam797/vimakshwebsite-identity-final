@@ -56,14 +56,31 @@ briefBtn?.addEventListener('click', () => {
   briefBtn.setAttribute('aria-expanded', String(open)); briefBtn.closest('.brief').classList.toggle('open', open);
   if (open) setTimeout(() => $('[data-brief-form] input')?.focus({ preventScroll: true }), 400);
 });
-$$('[data-brief-form]').forEach(form => form.addEventListener('submit', e => {
+// The brief goes to /api/brief (worker/index.js), which emails it to hq@vimaksh.in and sends the sender a confirmation.
+const formStart = performance.now();
+$$('[data-brief-form]').forEach(form => form.addEventListener('submit', async e => {
   e.preventDefault();
-  const f = e.currentTarget, note = $('[data-brief-note]', f);
-  if (!f.reportValidity()) return;
-  const d = new FormData(f), phone = d.get('phone');
-  const body = `Name: ${d.get('name')}\nEmail: ${d.get('email')}\nPhone: ${phone}\nCompany: ${d.get('company') || '-'}\n\n${d.get('message')}`;
-  location.href = `mailto:hq@vimaksh.in?subject=${encodeURIComponent('Project brief — ' + d.get('name'))}&body=${encodeURIComponent(body)}`;
-  if (note) note.textContent = 'Your email app should open with the brief. If not, write to hq@vimaksh.in.';
+  const f = e.currentTarget, note = $('[data-brief-note]', f), btn = $('button[type=submit]', f), label = $('span', btn);
+  if (f.dataset.busy || !f.reportValidity()) return;
+  const d = Object.fromEntries(new FormData(f));
+  d.elapsed = Math.round(performance.now() - formStart); d.page = location.pathname;
+  f.dataset.busy = '1'; btn.disabled = true; const was = label.textContent; label.textContent = 'Sending…';
+  note.classList.remove('is-ok', 'is-err'); note.textContent = '';
+  try {
+    const r = await fetch('/api/brief', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(d) });
+    const res = await r.json().catch(() => ({}));
+    if (!r.ok || !res.ok) throw new Error(res.error || 'Something went wrong.');
+    f.reset(); f.classList.add('sent');
+    note.classList.add('is-ok');
+    note.textContent = `Thanks${d.name ? ', ' + d.name.trim().split(/\s+/)[0] : ''}. Your brief is with us, and a confirmation is on its way to ${d.email}.`;
+    label.textContent = 'Sent';
+    setTimeout(() => { label.textContent = was; btn.disabled = false; f.classList.remove('sent'); }, 6000);
+  } catch (err) {
+    note.classList.add('is-err');
+    const a = Object.assign(document.createElement('a'), { href: 'mailto:hq@vimaksh.in', textContent: 'hq@vimaksh.in' });
+    note.replaceChildren(`${err.message} Please try again, or write to `, a, '.');
+    label.textContent = was; btn.disabled = false;
+  } finally { delete f.dataset.busy; }
 }));
 
 // ---------- Work videos: play only while on screen ----------

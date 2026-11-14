@@ -15,7 +15,7 @@ ADDRESS_LINES = ['3rd Floor, Eshaaya 1629', 'E End Main Rd, 4th T Block East', '
 ADDRESS = ', '.join(ADDRESS_LINES)
 LAT, LON = '12.9210° N', '77.5960° E'
 LAT_S, LON_S = '12.92° N', '77.60° E'
-MAPS = 'https://www.google.com/maps/search/?api=1&query=' + 'Eshaaya+1629+East+End+Main+Road+Jayanagar+9th+Block+Bengaluru+560041'
+MAPS = 'https://maps.app.goo.gl/ktwso9ycC2Ufo8Tt7'
 
 NEEDS = ['Chrome extension', 'Industry SaaS', 'AI automation', 'CRM / ERP', 'Internal tool', 'Not sure yet']
 
@@ -71,6 +71,7 @@ NAVBOX = '''<nav class="navbox" aria-label="Main" data-navbox>
 
 def brief_form(rows=4):
     return f'''          <form class="brief-form" data-brief-form novalidate>
+            <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
             <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
             <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
             <div class="f2"><label><span class="t-mono">Phone</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" pattern="[0-9+()\-\s]{{7,}}" placeholder="+91"></label>

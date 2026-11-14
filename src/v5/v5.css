@@ -740,3 +740,11 @@ body.nav-open .menubox{background:var(--red);border-color:var(--red);color:#fff}
 .foot-say .t-statement{font-size:clamp(44px,5vw,88px)}
 .foot-sub{max-width:44ch;margin-top:clamp(18px,1.8vw,26px)}
 @media(max-width:760px){.foot-say{--fm:96px;gap:28px}}
+
+/* Brief form: bot trap, sending states */
+.brief-form .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.brief-form button[disabled]{opacity:.7;cursor:progress}
+.brief-form.sent button[type=submit]{background:#16a34a;opacity:1;cursor:default}
+.f-foot .note.is-ok{color:#15803d}
+.f-foot .note.is-err{color:var(--red)}
+.f-foot .note a{color:inherit}

@@ -2,10 +2,14 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "vimaksh-pixel-identity",
   "compatibility_date": "2026-11-13",
+  // The worker answers /api/* (the brief form, sent by email through Resend); everything else is the static site.
+  "main": "worker/index.js",
   "observability": {
     "enabled": true
   },
   "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
     "not_found_handling": "single-page-application"
   }
 }
