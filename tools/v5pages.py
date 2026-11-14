@@ -70,14 +70,11 @@ NAVBOX = '''<nav class="navbox" aria-label="Main" data-navbox>
   </nav>'''
 
 def brief_form(rows=4):
-    chips = ''.join(f'<label><input type="checkbox" name="need" value="{n}"><span>{n}</span></label>' for n in NEEDS)
     return f'''          <form class="brief-form" data-brief-form novalidate>
             <div class="f2"><label><span class="t-mono">Name</span><input name="name" required autocomplete="name"></label>
             <label><span class="t-mono">Email</span><input name="email" type="email" required autocomplete="email"></label></div>
-            <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label>
-            <fieldset><legend class="t-mono">What do you need?</legend>
-              <div class="chips">{chips}</div>
-            </fieldset>
+            <div class="f2"><label><span class="t-mono">Phone</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" pattern="[0-9+()\-\s]{{7,}}" placeholder="+91"></label>
+            <label><span class="t-mono">Company <i>(optional)</i></span><input name="company" autocomplete="organization"></label></div>
             <label><span class="t-mono">Tell us about it</span><textarea name="message" rows="{rows}" required></textarea></label>
             <div class="f-foot"><button class="btn" type="submit"><span>Send brief</span><span class="chev" aria-hidden="true">&gt;</span></button><p class="t-mono note" data-brief-note>Opens your email app with the brief filled in.</p></div>
           </form>'''
@@ -95,13 +92,17 @@ def footer(name=""):
     <div class="foot-top">
       <div class="foot-say">
         <div class="fmark" role="img" aria-label="Vimaksh mark">{MARK_SVG}</div>
+        <div class="foot-copy">
         <p class="t-mono label"><span class="chev">&gt;</span> Let's talk</p>
         <h2 class="t-statement">Come build what<br>should exist.</h2>
+        <p class="foot-sub">Tell us what you want to build. We read every brief and reply within two working days with honest next steps.</p>
+        </div>
       </div>
       {foot_form if name != 'contact' else foot_cta}
     </div>
     <div class="cols">
       <div><p class="t-mono k">Navigate</p><ul><li><a href="/#work">Work</a></li><li><a href="/#services">What we build</a></li><li><a href="/#about">About us</a></li><li><a href="/contact/">Contact</a></li></ul></div>
+      <div><p class="t-mono k">Legal</p><ul><li><a href="/terms/">Terms &amp; conditions</a></li><li><a href="/privacy/">Privacy policy</a></li><li><a href="/cookies/">Cookie policy</a></li></ul></div>
       <div class="col-addr"><p class="t-mono k">Studio</p><address><a href="{MAPS}" target="_blank" rel="noopener">{addr}</a></address></div>
       <div><p class="t-mono k">Coordinates</p><p class="t-mono v">{LAT}<br>{LON}</p></div>
       <div><p class="t-mono k">Bengaluru now</p><p class="t-mono v"><span data-clock>--:--:--</span> IST</p></div>
@@ -165,7 +166,7 @@ def work_card(w, i):
         </a>
         <div class="meta"><h3>{w['name']}</h3><span class="t-mono kind">{w['kind']}</span></div>
         <p>{w['desc']}</p>
-        <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener"><span class="bt">Visit {w['host']}</span><span class="sr"> (opens in a new tab)</span><span class="trail" aria-hidden="true"><i>&gt;</i><i>&gt;</i><i>&gt;</i></span></a>
+        <a class="bar t-mono" href="{w['url']}" target="_blank" rel="noopener"><span class="bt">Visit {w['host']}</span><span class="sr"> (opens in a new tab)</span><span class="chev" aria-hidden="true">&gt;</span></a>
       </article>'''
 
 # What we build: custom software only. Each type gets its own pixel graphic and colour (src/v5/pixelart.js → saas).
@@ -237,7 +238,7 @@ home = f'''<section class="hero" id="top" aria-label="Vimaksh — Boil the Ocean
   </ul>
   <div class="track-foot">
     <span class="track-bar" aria-hidden="true"><i data-track-bar></i></span>
-    <div class="track-btns"><button type="button" class="tbtn" data-track-prev aria-label="Previous"><span aria-hidden="true">←</span></button><button type="button" class="tbtn" data-track-next aria-label="Next"><span aria-hidden="true">→</span></button></div>
+    <div class="track-btns"><button type="button" class="tbtn" data-track-prev aria-label="Previous"><span class="chev" aria-hidden="true">&lt;</span></button><button type="button" class="tbtn" data-track-next aria-label="Next"><span class="chev" aria-hidden="true">&gt;</span></button></div>
   </div>
 </section>'''
 
@@ -265,6 +266,54 @@ contact = f'''<section class="contact-page" aria-labelledby="ct-h">
     </div>
   </div>
 </section>'''
+
+
+# ---------------------------------------------------------------- legal pages (drafts: have them reviewed before launch)
+LEGAL_UPDATED = '14 November 2026'
+def legal_page(title, lead, sections):
+    body = ''.join(f'<h2>{h}</h2>{t}' for h, t in sections)
+    return f'''<article class="legal" aria-labelledby="lg-h">
+  <p class="t-mono label"><span class="chev">&gt;</span> Legal</p>
+  <h1 id="lg-h" class="t-hero">{title}</h1>
+  <p class="t-mono upd">Last updated {LEGAL_UPDATED}</p>
+  <p>{lead}</p>
+  {body}
+</article>'''
+
+terms = legal_page('Terms &amp; conditions',
+  'These terms cover your use of vimaksh.in. By using the site, you agree to them. Work we do for you is covered by a separate written agreement.', [
+  ('Who we are', f'<p>Vimaksh is a software studio based at {ADDRESS}. You can reach us at <a href="mailto:hq@vimaksh.in">hq@vimaksh.in</a>.</p>'),
+  ('Using this site', '<p>You may browse, read and share this site for personal and business use. Please do not copy it wholesale, try to break or overload it, or use it for anything unlawful.</p>'),
+  ('Projects and briefs', '<p>Sending a brief does not create a contract or oblige either side to work together. Any project is governed by the proposal, statement of work or agreement we both sign, which takes priority over these terms.</p>'),
+  ('Intellectual property', '<p>The Vimaksh name, wordmark, six-arrow mark, pixel graphics, text and code on this site belong to Vimaksh. Product names and logos shown in our work belong to their owners and appear with their permission.</p>'),
+  ('Links to other sites', '<p>Our work section links to products and sites we built or support. Those sites have their own terms, and we are not responsible for their content.</p>'),
+  ('No warranty', '<p>We keep this site accurate, but it is provided as it is. To the extent the law allows, we are not liable for losses arising from using it.</p>'),
+  ('Governing law', '<p>These terms are governed by the laws of India. Courts in Bengaluru, Karnataka have jurisdiction over any dispute.</p>'),
+  ('Changes', '<p>We may update these terms. The date at the top always shows the latest version.</p>'),
+])
+
+privacy = legal_page('Privacy policy',
+  'This policy explains what personal data we collect through this site, why, and the choices you have. We handle it in line with India’s Digital Personal Data Protection Act, 2023 and the Information Technology Act, 2000.', [
+  ('What we collect', '<p>When you send a brief, you give us your name, email, phone number, company (optional) and your message. The form opens your own email app, so the brief reaches us as an email you send. Our site does not store it on a server.</p><p>Like any website, our hosting provider may log basic technical data such as your IP address and browser, to keep the site secure and working.</p>'),
+  ('Why we use it', '<ul><li>To reply to your enquiry and discuss a possible project.</li><li>To keep records of our conversations and any work we agree.</li><li>To keep the site secure.</li></ul><p>We do not sell your data or use it for advertising.</p>'),
+  ('Who we share it with', '<p>Only with services that help us run the studio, such as our email and hosting providers, and only as far as they need it. We may also share data where the law requires it.</p>'),
+  ('How long we keep it', '<p>We keep enquiries for as long as needed to respond and for our business records, and delete them when no longer needed.</p>'),
+  ('Your rights', '<p>You can ask to access, correct or delete your personal data, or withdraw your consent, by writing to <a href="mailto:hq@vimaksh.in">hq@vimaksh.in</a>. We will respond within a reasonable time.</p>'),
+  ('Grievances', f'<p>For any concern about how we handle your data, contact our grievance officer at <a href="mailto:hq@vimaksh.in">hq@vimaksh.in</a> or write to us at {ADDRESS}.</p>'),
+  ('Changes', '<p>We may update this policy. The date at the top always shows the latest version.</p>'),
+])
+
+cookies = legal_page('Cookie policy',
+  'This site uses as little as possible on your device.', [
+  ('What we store', '<p>We remember your light or dark theme choice in your browser’s local storage, so the site looks the way you left it. It stays on your device and is never sent to us.</p>'),
+  ('What we do not use', '<p>We do not use advertising or tracking cookies, and we do not run third-party analytics that follow you across sites.</p>'),
+  ('Hosting', '<p>Our hosting and security provider may set strictly necessary cookies to protect the site from abuse. These are needed for the site to work and do not track you.</p>'),
+  ('Your choices', '<p>You can clear local storage and cookies at any time in your browser settings. The site will still work; it will just forget your theme.</p>'),
+])
+
+page('terms', 'Terms & conditions — Vimaksh', 'The terms for using vimaksh.in.', terms)
+page('privacy', 'Privacy policy — Vimaksh', 'How Vimaksh collects and uses personal data through vimaksh.in.', privacy)
+page('cookies', 'Cookie policy — Vimaksh', 'What vimaksh.in stores on your device.', cookies)
 
 page('home', 'Vimaksh — Boil the Ocean.', 'Vimaksh builds custom software: Chrome extensions, industry SaaS, AI automation, CRM and ERP. We turn “what if?” into products you can actually use.', home)
 page('contact', 'Contact — Vimaksh', f'Start a project with Vimaksh: hq@vimaksh.in, {ADDRESS}.', contact)

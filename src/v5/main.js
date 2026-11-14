@@ -60,8 +60,8 @@ $$('[data-brief-form]').forEach(form => form.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.currentTarget, note = $('[data-brief-note]', f);
   if (!f.reportValidity()) return;
-  const d = new FormData(f), needs = d.getAll('need').join(', ') || 'Not specified';
-  const body = `Name: ${d.get('name')}\nEmail: ${d.get('email')}\nCompany: ${d.get('company') || '-'}\nNeeds: ${needs}\n\n${d.get('message')}`;
+  const d = new FormData(f), phone = d.get('phone');
+  const body = `Name: ${d.get('name')}\nEmail: ${d.get('email')}\nPhone: ${phone}\nCompany: ${d.get('company') || '-'}\n\n${d.get('message')}`;
   location.href = `mailto:hq@vimaksh.in?subject=${encodeURIComponent('Project brief — ' + d.get('name'))}&body=${encodeURIComponent(body)}`;
   if (note) note.textContent = 'Your email app should open with the brief. If not, write to hq@vimaksh.in.';
 }));
@@ -173,7 +173,7 @@ rv.forEach((el, i) => { el.classList.add('rv'); el.style.transitionDelay = (i % 
   let pos = 0, paused = 0, hold = false, hover = false, last = performance.now(), onScreen = false;
   const sync = () => {
     const w = setW(), p = (((track.scrollLeft % w) + w) % w) / w, vis = Math.min(1, track.clientWidth / w);
-    if (bar) { bar.style.width = (vis * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p / vis * 100).toFixed(2)}%)`; }
+    if (bar) { bar.style.width = (vis * 100).toFixed(2) + '%'; bar.style.transform = `translateX(${(p * (1 - vis) / vis * 100).toFixed(2)}%)`; }
   };
   const pauseFor = ms => { paused = performance.now() + ms; };
   const jump = dir => {
